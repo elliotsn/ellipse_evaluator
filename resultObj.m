@@ -36,8 +36,10 @@ classdef resultObj
 
         grid; % Grid object used for this evaluation (grdObj.m). Empty if 
               % results are evaluated over an azimuth vector.
-        azvec; % Vector of azimuths over which this ellipse is evaluated. 
-               % Empty array if results are calculated over a grid object.
+        azvec; % Vector of azimuths over which this ellipse is evaluated 
+               % (radians). Empty array if results are calculated over a 
+               % grid object.
+        azvecd; % (degrees)
         ellipse % Ellipse object used for this evaluation (ellipseObj.m).
         
         lfname; % Cell array of layer file names.
@@ -54,6 +56,9 @@ classdef resultObj
             obj.ellipse = ellipse;
             obj.grid = grid;
             obj.azvec = azvec;
+            % Get azvec in degrees, for ease of plotting.
+            [label, ~, mult] = getAngUnitList();
+            obj.azvecd = obj.azvec/mult(find(strcmpi(label,'deg')));
             obj.ellLayerFrac = ellLayerFrac;
             obj.ellLayerTrueFrac = ellLayerTrueFrac;
             obj.ellTrueFrac = ellTrueFrac;

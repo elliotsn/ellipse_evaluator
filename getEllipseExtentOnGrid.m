@@ -23,11 +23,11 @@ function [x, y] = getEllipseExtentOnGrid(ellipse, grid, re, lat1, lonO)
     % Figure out how many ellipses are along the edges, if this is above
     % the threshold then just evaluate the corners to the find the extremes
     % and don't return an outline polygon in x and y.
-    ellThresh = 1e3;
+    ellThresh = getEllipseDrawThresh();
     % Number of ellipses on perimeter of grid
     nEllipses = (grid.nx*2 + (grid.ny-2)*2);
     
-	if (nEllipses > ellThresh)
+	if nEllipses > ellThresh
         fast = 1;
         % Fast way, just corners.
         [xc, yc] = boundingRect(grid.xgc(:), grid.ygc(:));

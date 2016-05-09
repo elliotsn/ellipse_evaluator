@@ -17,7 +17,6 @@
 %
 % Outputs:
 %   x,y - vectors of polygon coordinates for union shape.
-%   mingrdx, maxgrdx, mingrdy, maxgrdy - rectangular grid limits
 %
 function [x, y] = getEllipseExtentAz(ellipse, azvec, re, lat1, lonO)
 

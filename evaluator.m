@@ -750,6 +750,8 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
                     data.grid{1} = data.grid{1}.getEqaXYFromLatLon(...
                         data.re,data.proj.lat1,data.proj.lonO);
 
+                    % How many
+                    
                     [xEllPoly, yEllPoly] = getEllipseExtentOnGrid(...
                         data.ellipse{1}, data.grid{1},...
                         data.re, data.proj.lat1, data.proj.lonO);
@@ -768,7 +770,6 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
     end
     
     % If we made it here, grid or azVec is valid.
-    
     cla(data.ax);
     setStatus('Plotting...');
 
@@ -978,19 +979,27 @@ function evaluatoresultsPreviewPB_Callback(hObject, eventdata, data)
         
         % Plot lines for ellLayerTrueFrac for each layer. ellLayerTrueFrac
         % should be an nlayer x naz.
-        for il = 1:nlayers            
-            plot(data.result.azvec, squeeze(data.result.ellLayerTrueFrac(il, :)),...
-            'Parent',data.ax);
+        legStr = cell(1,data.nlayers+1);
+        for il = 1:data.nlayers         
+            plot(data.result.azvecd, squeeze(data.result.ellLayerTrueFrac(il, :)),...
+            'Parent',data.ax,...
+            'Marker','^');
             if il == 1
                 hold on
             end
+            legStr{il} = data.layers{il}.fname;
         end
-        plot(data.result.azvec, data.result.ellTrueFrac,...
-            'Parent',data.ax, 'LineWidth', 2, 'Color', [0 0 0]);
-        xlabel('Azimuth (\^circ)','Interpreter','latex');
-        ylabel('Ellipse fraction');
-        title('Fraction of ellipse at azimuth that meets layer constraints','Interpreter','none');
+        legStr{end} = 'Total compliant ellipse fraction';
+        plot(data.result.azvecd, data.result.ellTrueFrac,...
+            'Parent',data.ax, 'LineWidth', 2,...
+            'Color','k','Marker','+');
+        set(data.ax,...
+            'XLim',[min(data.result.azvecd) max(data.result.azvecd)]);
+        xlabel('Azimuth$^\circ$','Interpreter','latex');
+        ylabel('Ellipse fraction','Interpreter','latex');
+        title('Ellipse fraction at azimuth that meets layer constraints');
         hold off
+        legend(legStr);
     else
         % Assumption is that the results object contains results over a
         % spatial grid object.
