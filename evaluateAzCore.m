@@ -50,7 +50,7 @@
 % Author : Elliot Sefton-Nash
 % Date   : 20160502
 %
-function result = optimizeAzCore(ellipse, azvec, layers, wb)
+function result = evaluateAzCore(ellipse, azvec, layers, wb)
 
     if wb
         hWb = waitbar(0,'Initialising...',...

@@ -1,19 +1,19 @@
-function varargout = optimizer(varargin)
-    % OPTIMIZER MATLAB code for optimizer.fig
-    %      OPTIMIZER, by itself, creates a new OPTIMIZER or raises the existing
+function varargout = evaluator(varargin)
+    % EVALUATOR MATLAB code for evaluator.fig
+    %      EVALUATOR, by itself, creates a new EVALUATOR or raises the existing
     %      singleton*.
     %
-    %      H = OPTIMIZER returns the handle to a new OPTIMIZER or the handle to
+    %      H = EVALUATOR returns the handle to a new EVALUATOR or the handle to
     %      the existing singleton*.
     %
-    %      OPTIMIZER('CALLBACK',hObject,eventData,handles,...) calls the local
-    %      function named CALLBACK in OPTIMIZER.M with the given input arguments.
+    %      EVALUATOR('CALLBACK',hObject,eventData,handles,...) calls the local
+    %      function named CALLBACK in EVALUATOR.M with the given input arguments.
     %
-    %      OPTIMIZER('Property','Value',...) creates a new OPTIMIZER or raises the
+    %      EVALUATOR('Property','Value',...) creates a new EVALUATOR or raises the
     %      existing singleton*.  Starting from the left, property value pairs are
-    %      applied to the GUI before optimizer_OpeningFcn gets called.  An
+    %      applied to the GUI before evaluator_OpeningFcn gets called.  An
     %      unrecognized property name or invalid value makes property application
-    %      stop.  All inputs are passed to optimizer_OpeningFcn via varargin.
+    %      stop.  All inputs are passed to evaluator_OpeningFcn via varargin.
     %
     %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
     %      instance to run (singleton)".
@@ -29,8 +29,8 @@ function varargout = optimizer(varargin)
     gui_Singleton = 1;
     gui_State = struct('gui_Name',       mfilename, ...
                        'gui_Singleton',  gui_Singleton, ...
-                       'gui_OpeningFcn', @optimizer_OpeningFcn, ...
-                       'gui_OutputFcn',  @optimizer_OutputFcn, ...
+                       'gui_OpeningFcn', @evaluator_OpeningFcn, ...
+                       'gui_OutputFcn',  @evaluator_OutputFcn, ...
                        'gui_LayoutFcn',  [] , ...
                        'gui_Callback',   []);
     if nargin && ischar(varargin{1})
@@ -45,26 +45,26 @@ function varargout = optimizer(varargin)
     % End initialization code - DO NOT EDIT    
 end
 
-% Executes just before optimizer is made visible.
-function optimizer_OpeningFcn(hObject, eventdata, handles, varargin)
+% Executes just before evaluator is made visible.
+function evaluator_OpeningFcn(hObject, eventdata, handles, varargin)
     % This function has no output args, see OutputFcn.
     % hObject    handle to figure
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
-    % varargin   command line arguments to optimizer (see VARARGIN)
+    % varargin   command line arguments to evaluator (see VARARGIN)
 
-    % Choose default command line output for optimizer
+    % Choose default command line output for evaluator
     handles.output = hObject;
 
     % Update handles structure
     guidata(hObject, handles);
 
-    % UIWAIT makes optimizer wait for user response (see UIRESUME)
+    % UIWAIT makes evaluator wait for user response (see UIRESUME)
     % uiwait(handles.figure1);
 end
 
 % --- Outputs from this function are returned to the command line.
-function varargout = optimizer_OutputFcn(hObject, eventdata, handles) 
+function varargout = evaluator_OutputFcn(hObject, eventdata, handles) 
     % varargout  cell array for returning output args (see VARARGOUT);
     % hObject    handle to figure
     % eventdata  reserved - to be defined in a future version of MATLAB
@@ -129,9 +129,9 @@ function layerPBAdd_Callback(hObject, eventdata, handles)
             data.layerListBox.String = ...
                 vertcat(data.layerListBox.String,{data.layers{data.nlayers}.fname});
 
-            % Update setbounds listbox on the Optimize tab
-            data.optimizeSetBoundsPopup.String = data.layerListBox.String;
-            data.optimizeSetBoundsPopup.Value = data.layerListBox.Value;
+            % Update setbounds listbox on the Evaluate tab
+            data.evaluateSetBoundsPopup.String = data.layerListBox.String;
+            data.evaluateSetBoundsPopup.Value = data.layerListBox.Value;
             
             % If this is the last layer in the list to be added, update layer controls 
             % passing only required structures and selected layer from 'data'.
@@ -180,8 +180,8 @@ function layerPBRemove_Callback(hObject, eventdata, handles)
         data.layerListBox.String = removeEmptyCells(data.layerListBox.String);
         
         % Update setbounds listbox
-        data.optimizeSetBoundsPopup.String = data.layerListBox.String;
-        data.optimizeSetBoundsPopup.Value = data.layerListBox.Value;
+        data.evaluateSetBoundsPopup.String = data.layerListBox.String;
+        data.evaluateSetBoundsPopup.Value = data.layerListBox.Value;
 
         % If there was only one layer, then now there are none. disable layer controls.
         if data.nlayers == 0
@@ -195,15 +195,15 @@ function layerPBRemove_Callback(hObject, eventdata, handles)
             
             % Reset the set bounds listbox - produces warning if Value <= 0
             % || isempty(String)
-            data.optimizeSetBoundsPopup.String = ' '; % Requires non-empty string.
-            data.optimizeSetBoundsPopup.Value = 1;
+            data.evaluateSetBoundsPopup.String = ' '; % Requires non-empty string.
+            data.evaluateSetBoundsPopup.Value = 1;
             
             data = setLayerControls(data, 'off');
             
         else
             % If still layers left, set selected layer back to first layer.
             data.layerListBox.Value = 1;
-            data.optimizeSetBoundsPopup.Value = data.layerListBox.Value;
+            data.evaluateSetBoundsPopup.Value = data.layerListBox.Value;
         end
     end
     % Put guidata back
@@ -579,109 +579,109 @@ function layerEllipsePreviewPB_Callback(hObject, eventdata, handles)
     setStatus('Ready.');
 end
 
-% Callback for optimize minimum x coord. edit box
-function optimizeXMinEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate minimum x coord. edit box
+function evaluateXMinEdit_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-    [data.optimizeXMinEdit.String, data.optimizeXMinEdit.Value] = validLon(data.optimizeXMinEdit.String);
+    [data.evaluateXMinEdit.String, data.evaluateXMinEdit.Value] = validLon(data.evaluateXMinEdit.String);
     guidata(gcbf, data); 
 end
 
-% Callback for optimize x coord. interval edit box
-function optimizeXStepEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate x coord. interval edit box
+function evaluateXStepEdit_Callback(hObject, eventdata, handles)
     data = guidata(gcbf);
-    [data.optimizeXStepEdit.String, data.optimizeXStepEdit.Value] = validLon(data.optimizeXStepEdit.String);
+    [data.evaluateXStepEdit.String, data.evaluateXStepEdit.Value] = validLon(data.evaluateXStepEdit.String);
     guidata(gcbf, data);
 end
 
-% Callback for optimize maximum x coord. edit box
-function optimizeXMaxEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate maximum x coord. edit box
+function evaluateXMaxEdit_Callback(hObject, eventdata, handles)
     data = guidata(gcbf);
-    [data.optimizeXMaxEdit.String, data.optimizeXMaxEdit.Value] = validLon(data.optimizeXMaxEdit.String);
+    [data.evaluateXMaxEdit.String, data.evaluateXMaxEdit.Value] = validLon(data.evaluateXMaxEdit.String);
     guidata(gcbf, data); 
 end
 
-% Callback for optimize minimum y coord. edit box
-function optimizeYMinEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate minimum y coord. edit box
+function evaluateYMinEdit_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-    [data.optimizeYMinEdit.String, data.optimizeYMinEdit.Value] = validLat(data.optimizeYMinEdit.String);
+    [data.evaluateYMinEdit.String, data.evaluateYMinEdit.Value] = validLat(data.evaluateYMinEdit.String);
     guidata(gcbf, data); 
 end
 
-% Callback for optimize y coord. interval edit box
-function optimizeYStepEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate y coord. interval edit box
+function evaluateYStepEdit_Callback(hObject, eventdata, handles)
     data = guidata(gcbf);
-    [data.optimizeYStepEdit.String, data.optimizeYStepEdit.Value] = validLat(data.optimizeYStepEdit.String);
+    [data.evaluateYStepEdit.String, data.evaluateYStepEdit.Value] = validLat(data.evaluateYStepEdit.String);
     guidata(gcbf, data);
 end
 
-% Callback for optimize maximum y coord. edit box
-function optimizeYMaxEdit_Callback(hObject, eventdata, handles)
+% Callback for evaluate maximum y coord. edit box
+function evaluateYMaxEdit_Callback(hObject, eventdata, handles)
     data = guidata(gcbf);
-    [data.optimizeYMaxEdit.String, data.optimizeYMaxEdit.Value] = validLat(data.optimizeYMaxEdit.String);
+    [data.evaluateYMaxEdit.String, data.evaluateYMaxEdit.Value] = validLat(data.evaluateYMaxEdit.String);
     guidata(gcbf, data); 
 end
 
 % Edit the azimuth in the ellipse tab, min
-function optimizeAzMinEdit_Callback(hObject, eventdata, handles)
+function evaluateAzMinEdit_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-    [data.optimizeAzMinEdit.String, data.optimizeAzMinEdit.Value] = ...
-    validAz(data.optimizeAzMinEdit.String, data.optimizeAzEditUnitsListBox.Value);
+    [data.evaluateAzMinEdit.String, data.evaluateAzMinEdit.Value] = ...
+    validAz(data.evaluateAzMinEdit.String, data.evaluateAzEditUnitsListBox.Value);
     guidata(gcbf, data);
 end
 
 % Edit the azimuth in the ellipse tab, step
-function optimizeAzStepEdit_Callback(hObject, eventdata, handles)
+function evaluateAzStepEdit_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-    [data.optimizeAzStepEdit.String, data.optimizeAzStepEdit.Value] = ...
-    validAz(data.optimizeAzStepEdit.String, data.optimizeAzEditUnitsListBox.Value);
+    [data.evaluateAzStepEdit.String, data.evaluateAzStepEdit.Value] = ...
+    validAz(data.evaluateAzStepEdit.String, data.evaluateAzEditUnitsListBox.Value);
     guidata(gcbf, data);
 end
 
 % Edit the azimuth in the ellipse tab, max
-function optimizeAzMaxEdit_Callback(hObject, eventdata, handles)
+function evaluateAzMaxEdit_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-    [data.optimizeAzMaxEdit.String, data.optimizeAzMaxEdit.Value] = ...
-    validAz(data.optimizeAzMaxEdit.String, data.optimizeAzEditUnitsListBox.Value);
+    [data.evaluateAzMaxEdit.String, data.evaluateAzMaxEdit.Value] = ...
+    validAz(data.evaluateAzMaxEdit.String, data.evaluateAzEditUnitsListBox.Value);
     guidata(gcbf, data);
 end
 
 
-% Callback for when optimize set bounds is called. This is only pressed
+% Callback for when evaluate set bounds is called. This is only pressed
 % when layers are present, so no need to check that.
-function layerOptimizeSetBoundsPB_Callback(hObject, eventdata, handles)
+function layerEvaluateSetBoundsPB_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
     
     % Array of layers should be same as order in ellipseLayerListBox
-    i = data.optimizeSetBoundsPopup.Value;
+    i = data.evaluateSetBoundsPopup.Value;
     
     % Set values
-    data.optimizeXMinEdit.Value = data.layers{i}.lonlims(1);
-    data.optimizeXMaxEdit.Value = data.layers{i}.lonlims(2);
-    data.optimizeYMinEdit.Value = data.layers{i}.latlims(1);
-    data.optimizeYMaxEdit.Value = data.layers{i}.latlims(2);
+    data.evaluateXMinEdit.Value = data.layers{i}.lonlims(1);
+    data.evaluateXMaxEdit.Value = data.layers{i}.lonlims(2);
+    data.evaluateYMinEdit.Value = data.layers{i}.latlims(1);
+    data.evaluateYMaxEdit.Value = data.layers{i}.latlims(2);
     
     % Set strings;
-    data.optimizeXMinEdit.String = num2str(data.layers{i}.lonlims(1));
-    data.optimizeXMaxEdit.String = num2str(data.layers{i}.lonlims(2));
-    data.optimizeYMinEdit.String = num2str(data.layers{i}.latlims(1));
-    data.optimizeYMaxEdit.String = num2str(data.layers{i}.latlims(2));
+    data.evaluateXMinEdit.String = num2str(data.layers{i}.lonlims(1));
+    data.evaluateXMaxEdit.String = num2str(data.layers{i}.lonlims(2));
+    data.evaluateYMinEdit.String = num2str(data.layers{i}.latlims(1));
+    data.evaluateYMaxEdit.String = num2str(data.layers{i}.latlims(2));
     
     guidata(gcbf, data);
 end
 
 % Returns 1 if we are in azimuth evaluation mode, 0 if not.
 function azMode = getAzMode(val)
-    modes = getOptimizeModes();
+    modes = getEvaluateModes();
     azMode = false;
     if strcmpi(modes{val},'azimuth')
         azMode = true;
     end
 end
 
-% Callback for when optimize Preview button is pressed. Purpose of this
+% Callback for when evaluate Preview button is pressed. Purpose of this
 % callback is to visualise the spatial extent of the ellipses that will be 
 % evaluated, with options for a bounding box and layer footprints.
-function layerOptimizePreviewPB_Callback(hObject, eventdata, handles)
+function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
     
     azMode = getAzMode(data.mode);
@@ -693,18 +693,18 @@ function layerOptimizePreviewPB_Callback(hObject, eventdata, handles)
     if azMode
 
         % Check for valid azimuth vector definitions.
-        if ~isempty(data.optimizeAzMinEdit.Value) &&...
-           ~isempty(data.optimizeAzMaxEdit.Value) &&...
-           ~isempty(data.optimizeAzStepEdit.Value)
+        if ~isempty(data.evaluateAzMinEdit.Value) &&...
+           ~isempty(data.evaluateAzMaxEdit.Value) &&...
+           ~isempty(data.evaluateAzStepEdit.Value)
             % Try to make a vector of azimuths, in radians.
             try
                 [~, ~, mult] = getAngUnitList();
                 % List box value corresponds to position in arrays returned by
                 % getAngUnitList. Convert to radians.
-                azVec = validAzVec(data.optimizeAzMinEdit.Value,...
-                                   data.optimizeAzStepEdit.Value,...
-                                   data.optimizeAzMaxEdit.Value,...
-                            mult(data.optimizeAzEditUnitsListBox.Value));
+                azVec = validAzVec(data.evaluateAzMinEdit.Value,...
+                                   data.evaluateAzStepEdit.Value,...
+                                   data.evaluateAzMaxEdit.Value,...
+                            mult(data.evaluateAzEditUnitsListBox.Value));
 
                 % Get the ellipse extents at the azimuth range.
                 [xEllPoly, yEllPoly] = getEllipseExtentAz(...
@@ -722,16 +722,16 @@ function layerOptimizePreviewPB_Callback(hObject, eventdata, handles)
     else % Grid mode
         
         % Check that all the required edit boxes have values.
-        if ~isempty(data.optimizeXMinEdit.Value) && ~isempty(data.optimizeXMaxEdit.Value) &&...
-           ~isempty(data.optimizeYMinEdit.Value) && ~isempty(data.optimizeYMaxEdit.Value) &&... 
-           ~isempty(data.optimizeYStepEdit.Value) && ~isempty(data.optimizeXStepEdit.Value)
+        if ~isempty(data.evaluateXMinEdit.Value) && ~isempty(data.evaluateXMaxEdit.Value) &&...
+           ~isempty(data.evaluateYMinEdit.Value) && ~isempty(data.evaluateYMaxEdit.Value) &&... 
+           ~isempty(data.evaluateYStepEdit.Value) && ~isempty(data.evaluateXStepEdit.Value)
             
             % Try to make a grid object, if vectors are returned empty then
             % grid is invalid.
-            data.grid{1} = grdObj(getVec([data.optimizeXMinEdit.Value data.optimizeXMaxEdit.Value],...
-                                          data.optimizeXStepEdit.Value),...
-                                  getVec([data.optimizeYMinEdit.Value data.optimizeYMaxEdit.Value],...
-                                          data.optimizeYStepEdit.Value) );                        
+            data.grid{1} = grdObj(getVec([data.evaluateXMinEdit.Value data.evaluateXMaxEdit.Value],...
+                                          data.evaluateXStepEdit.Value),...
+                                  getVec([data.evaluateYMinEdit.Value data.evaluateYMaxEdit.Value],...
+                                          data.evaluateYStepEdit.Value) );                        
             
             if isempty(data.grid{1})
                 setStatus('Grid definition is invalid.');
@@ -774,8 +774,8 @@ function layerOptimizePreviewPB_Callback(hObject, eventdata, handles)
 
     % PLOT RASTER FOOTPRINTS
     % If the check box is enabled and checked, plot raster layer footprints.
-    if strcmpi(data.optimizePlotRasterFootprintCB.Enable, 'on') && ...
-               data.optimizePlotRasterFootprintCB.Value == 1
+    if strcmpi(data.evaluatePlotRasterFootprintCB.Enable, 'on') && ...
+               data.evaluatePlotRasterFootprintCB.Value == 1
         hold(data.ax, 'on');
         plotLayerFootprints(data.layers, data.ax);
         hold(data.ax, 'off');
@@ -816,10 +816,10 @@ function data = setLayerControls(data, state)
     data.layerCBInvert.Enable = state;
     % Draw raster layer footprint checkbox on Ellipse tab.
     data.ellipseRasterFootprintCB.Enable = state;
-    % 'Set bounds' PB, Popup and raster CB and  on the Optimize tab.
-    data.optimizeSetBoundsPB.Enable = state;
-    data.optimizeSetBoundsPopup.Enable = state;
-    data.optimizePlotRasterFootprintCB.Enable = state;
+    % 'Set bounds' PB, Popup and raster CB and  on the Evaluate tab.
+    data.evaluateSetBoundsPB.Enable = state;
+    data.evaluateSetBoundsPopup.Enable = state;
+    data.evaluatePlotRasterFootprintCB.Enable = state;
 end
 
 % Status
@@ -828,8 +828,8 @@ function setStatus(msg)
     data.status.String = msg;
 end
 
-% Optimize pushbutton callback. DO THE OPTIMIZE
-function layerOptimizeOptimizePB_Callback(hObject, eventdata, handles)
+% Evaluate pushbutton callback. DO THE evaluate
+function layerEvaluateEvaluatePB_Callback(hObject, eventdata, handles)
 
     data = guidata(gcbf);
 
@@ -837,12 +837,12 @@ function layerOptimizeOptimizePB_Callback(hObject, eventdata, handles)
     % At least one layer
     goFlag = true;
     if data.nlayers < 1
-        setStatus('Can''t optimize - no layers loaded.')
+        setStatus('Can''t evaluate - no layers loaded.')
         return
     end
     
     % A valid ellipse?
-    errStr = 'Can''t optimize - no valid ellipse entered.';
+    errStr = 'Can''t evaluate - no valid ellipse entered.';
     if ~isfield(data,'ellipse')
         goFlag = false;
     else
@@ -856,17 +856,17 @@ function layerOptimizeOptimizePB_Callback(hObject, eventdata, handles)
     end
     
     % A valid grid, or azvec
-	errStr = 'Can''t optimize - no valid parameters entered.';
+	errStr = 'Can''t evaluate - no valid parameters entered.';
     
     azMode = getAzMode(data.mode);
     if azMode
         [~, ~, mult] = getAngUnitList();
         % List box value corresponds to position in arrays returned by
         % getAngUnitList. Convert to radians.
-        data.azVec = validAzVec(data.optimizeAzMinEdit.Value,...
-                           data.optimizeAzStepEdit.Value,...
-                           data.optimizeAzMaxEdit.Value,...
-                    mult(data.optimizeAzEditUnitsListBox.Value));
+        data.azVec = validAzVec(data.evaluateAzMinEdit.Value,...
+                           data.evaluateAzStepEdit.Value,...
+                           data.evaluateAzMaxEdit.Value,...
+                    mult(data.evaluateAzEditUnitsListBox.Value));
         if ~data.azVec  % Returned empty if invalid.
             setStatus(errStr);
             return
@@ -887,23 +887,23 @@ function layerOptimizeOptimizePB_Callback(hObject, eventdata, handles)
     end
     
     % If we made it this far, everything appears valid.
-    % Pass all the details to the optimizing routine     
-	setStatus('Optimizing...');
+    % Pass all the details to the evaluating routine     
+	setStatus('Evaluating...');
      
     % data.ellipse, data.grid and data.layers are cell arrays of thier
     % respective objects, but we pass the grid and ellipse objects to
-    % optimizeXYCore, but a cell array of rasterLayer objects.
+    % evaluateXYCore, but a cell array of rasterLayer objects.
     wb = true; % We want a waitbar.
     
     if azMode
         % Run assessment.
-        data.result = optimizeAzCore(data.ellipse{1}, data.azVec, data.layers, wb);
+        data.result = evaluateAzCore(data.ellipse{1}, data.azVec, data.layers, wb);
     else
         % Make sure the grid has map coordinates. It may not have been
         % previewed.
         data.grid{1} = data.grid{1}.getEqaXYFromLatLon(data.re,data.proj.lat1,data.proj.lonO);
         % Run assessment.
-        data.result = optimizeXYCore(data.ellipse{1}, data.grid{1}, data.layers, wb); 
+        data.result = evaluateXYCore(data.ellipse{1}, data.grid{1}, data.layers, wb); 
     end
 
     setStatus('Ready.');
@@ -918,15 +918,15 @@ end
 
 % Function to set the state of the results panel UI elements.
 function data = setResultsControlsState(data, state)
-    data.optimizeResultsPreviewPB.Enable = state;
-    data.optimizeResultsOutputPB.Enable = state;
-    data.optimizeResultsOutputEdit.Enable = state;
-    data.optimizeResultsFormatListBox.Enable = state;
-    data.optimizeResultsSavePB.Enable = state;
+    data.evaluatoresultsPreviewPB.Enable = state;
+    data.evaluatoresultsOutputPB.Enable = state;
+    data.evaluatoresultsOutputEdit.Enable = state;
+    data.evaluatoresultsFormatListBox.Enable = state;
+    data.evaluatoresultsSavePB.Enable = state;
 end
 
 % Function to select the output directory from the built-in UI.
-function optimizeResultsOutputPB_Callback(hObject, eventdata, handles)
+function evaluatoresultsOutputPB_Callback(hObject, eventdata, handles)
 
     % Open the directory file selection dialogue.
     dirName = uigetdir(matlabroot, 'Select results output directory');
@@ -935,19 +935,19 @@ function optimizeResultsOutputPB_Callback(hObject, eventdata, handles)
     if ~isnumeric(dirName)        
         data = guidata(gcbf);
         % Set edit box to returned path.
-        data.optimizeResultsOutputEdit.String = dirName;
+        data.evaluatoresultsOutputEdit.String = dirName;
         guidata(gcbf, data);
     end
 end
 
 % Function to write the results
-function optimizeResultsSavePB_Callback(hObject, eventdata, handles)
+function evaluatoresultsSavePB_Callback(hObject, eventdata, handles)
 
 	data = guidata(gcbf);
     % If the results directory is not valid then do not write and set the
     % save path to null.
-    if ~exist(data.optimizeResultsOutputEdit.String,'dir')
-        data.optimizeResultsOutputEdit.String = '';
+    if ~exist(data.evaluatoresultsOutputEdit.String,'dir')
+        data.evaluatoresultsOutputEdit.String = '';
         % Warn here that the data directory is not valid.
         warn('Data output directory is invalid.');
     else
@@ -955,15 +955,15 @@ function optimizeResultsSavePB_Callback(hObject, eventdata, handles)
         % Save the results in desired format, ext is the identifier (not
         % desc, which is the string of the list box).
         [~, ext, ~] = getFileFormatList();
-        outfpath = [data.optimizeResultsOutputEdit.String,'result_',getTimeStrNow()];
-        data.result.write(ext(data.optimizeResultsFormatListBox.Value), outfpath);
+        outfpath = [data.evaluatoresultsOutputEdit.String,'result_',getTimeStrNow()];
+        data.result.write(ext(data.evaluatoresultsFormatListBox.Value), outfpath);
         setStatus('Ready.');
     end
     guidata(gcbf, data);
 end
 
 % Function to preview the results.
-function optimizeResultsPreviewPB_Callback(hObject, eventdata, data)
+function evaluatoresultsPreviewPB_Callback(hObject, eventdata, data)
     
     data = guidata(gcbf);
     
@@ -1011,56 +1011,56 @@ function optimizeResultsPreviewPB_Callback(hObject, eventdata, data)
     end
 end
 
-function optimizeModeListBox_Callback(hObject, eventdata, data)
-    guidata(gcbf, setOptimizeModeState(guidata(gcbf)));
+function evaluateModeListBox_Callback(hObject, eventdata, data)
+    guidata(gcbf, setEvaluateModeState(guidata(gcbf)));
 end
 
-function data = setOptimizeModeState(data)
+function data = setEvaluateModeState(data)
 
     % Set the mode as an integer in a top-level variable.
-    data.mode = data.optimizeModeListBox.Value;
+    data.mode = data.evaluateModeListBox.Value;
 
-    opModes = getOptimizeModes();
+    opModes = getEvaluateModes();
     
     % Find the value of the azimuth list box and set it.
     stateOn = 'on';
     stateOff = 'off';
-    switch opModes{data.optimizeModeListBox.Value}
+    switch opModes{data.evaluateModeListBox.Value}
         case 'azimuth'
-            % Make azimuth optimizer controls active, but disable lat-lon.
+            % Make azimuth evaluator controls active, but disable lat-lon.
             
-            data.optimizeAzMinEdit.Enable = stateOn;
-            data.optimizeAzStepEdit.Enable = stateOn;
-            data.optimizeAzMaxEdit.Enable = stateOn;
-            data.optimizeAzEditUnitsListBox.Enable = stateOn;
+            data.evaluateAzMinEdit.Enable = stateOn;
+            data.evaluateAzStepEdit.Enable = stateOn;
+            data.evaluateAzMaxEdit.Enable = stateOn;
+            data.evaluateAzEditUnitsListBox.Enable = stateOn;
             
-            data.optimizeXMinEdit.Enable = stateOff;
-            data.optimizeXStepEdit.Enable = stateOff;
-            data.optimizeXMaxEdit.Enable = stateOff;
-            data.optimizeYMinEdit.Enable = stateOff;
-            data.optimizeYStepEdit.Enable = stateOff;
-            data.optimizeYMaxEdit.Enable = stateOff;
-            data.optimizeSetBoundsPB.Enable = stateOff;
-            data.optimizeSetBoundsPopup.Enable = stateOff;
+            data.evaluateXMinEdit.Enable = stateOff;
+            data.evaluateXStepEdit.Enable = stateOff;
+            data.evaluateXMaxEdit.Enable = stateOff;
+            data.evaluateYMinEdit.Enable = stateOff;
+            data.evaluateYStepEdit.Enable = stateOff;
+            data.evaluateYMaxEdit.Enable = stateOff;
+            data.evaluateSetBoundsPB.Enable = stateOff;
+            data.evaluateSetBoundsPopup.Enable = stateOff;
             
         case 'lat-lon'
-            % Make lat-lon optimizer controls active, but disable azimuth.
-            data.optimizeAzMinEdit.Enable = stateOff;
-            data.optimizeAzStepEdit.Enable = stateOff;
-            data.optimizeAzMaxEdit.Enable = stateOff;
-            data.optimizeAzEditUnitsListBox.Enable = stateOff;
+            % Make lat-lon evaluator controls active, but disable azimuth.
+            data.evaluateAzMinEdit.Enable = stateOff;
+            data.evaluateAzStepEdit.Enable = stateOff;
+            data.evaluateAzMaxEdit.Enable = stateOff;
+            data.evaluateAzEditUnitsListBox.Enable = stateOff;
             
-            data.optimizeXMinEdit.Enable = stateOn;
-            data.optimizeXStepEdit.Enable = stateOn;
-            data.optimizeXMaxEdit.Enable = stateOn;
-            data.optimizeYMinEdit.Enable = stateOn;
-            data.optimizeYStepEdit.Enable = stateOn;
-            data.optimizeYMaxEdit.Enable = stateOn;
+            data.evaluateXMinEdit.Enable = stateOn;
+            data.evaluateXStepEdit.Enable = stateOn;
+            data.evaluateXMaxEdit.Enable = stateOn;
+            data.evaluateYMinEdit.Enable = stateOn;
+            data.evaluateYStepEdit.Enable = stateOn;
+            data.evaluateYMaxEdit.Enable = stateOn;
             
             % Only enable if there are layers loaded.
             if data.nlayers > 0
-                data.optimizeSetBoundsPB.Enable = stateOn;
-                data.optimizeSetBoundsPopup.Enable = stateOn;
+                data.evaluateSetBoundsPB.Enable = stateOn;
+                data.evaluateSetBoundsPopup.Enable = stateOn;
             end
     end
 end
@@ -1090,7 +1090,7 @@ function figure1_CreateFcn(hObject, eventdata, data)
     data.tabgroup = uitabgroup(data.fig,'Position',[.02 .08 .28 .9]);
     data.tabLayers = uitab(data.tabgroup,'Title','Layers');
     data.tabEllipse = uitab(data.tabgroup,'Title','Ellipse');
-    data.tabOptimize = uitab(data.tabgroup,'Title','Optimize');
+    data.tabEvaluate = uitab(data.tabgroup,'Title','Evaluate');
 
     stateOn = 'on';
     stateOff = 'off';
@@ -1272,10 +1272,10 @@ function figure1_CreateFcn(hObject, eventdata, data)
         'Visible', 'on', 'String', 'Plot layer footprints',...
         'Enable',stateOff,'Value', 0);
     
-    %% --- OPTIMIZE ---
+    %% --- EVALUATE ---
     
     % Panel to set parameters over which to evaluate
-    data.optimizeParamPanel = uipanel('Parent', data.tabOptimize, 'Title', 'PARAMETERS',...
+    data.evaluateParamPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'PARAMETERS',...
         'FontSize', 11, 'Position', [.04 .5 .92 .48]);
     
     % Spatial constraint layout
@@ -1296,17 +1296,17 @@ function figure1_CreateFcn(hObject, eventdata, data)
     
     ypos = ytop - 2*.02;
     % Drop down list box to choose in what mode to operate.
-    data.optimizeModeLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateModeLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String', 'Evaluate ellipse compliance over:',...
                 'Units','normalized','Position',[xl ypos+1.5*labelYOffset 2*labelw labelh]);   
     
-	% The default optimize mode is for a grid of lat-lon.
+	% The default evaluate mode is for a grid of lat-lon.
 	data.mode = 1;
-    data.optimizeModeListBox = uicontrol(data.optimizeParamPanel,'Style','popupmenu',...
-        'Visible', 'on', 'String', getOptimizeModes(),...
+    data.evaluateModeListBox = uicontrol(data.evaluateParamPanel,'Style','popupmenu',...
+        'Visible', 'on', 'String', getEvaluateModes(),...
                 'Value',data.mode,...
                 'Units','normalized','Position',[xl+2*labelw ypos-0.08 1.1*labelw 1.1*labelh],...
-                'Callback', @optimizeModeListBox_Callback);
+                'Callback', @evaluateModeListBox_Callback);
 
     rowNumber = rowNumber + 1;
 	% x label
@@ -1315,85 +1315,85 @@ function figure1_CreateFcn(hObject, eventdata, data)
     
     
     % minlabel
-    data.optimizeMinLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateMinLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Min',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);        
     % steplabel
-    data.optimizeStepLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateStepLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Interval',...
                 'Units','normalized','Position',[xm ypos+labelYOffset labelw labelh]);
     % maxlabel
-    data.optimizeMaxLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateMaxLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Max',...
                 'Units','normalized','Position',[xr ypos+labelYOffset labelw labelh]);
             
     rowNumber = rowNumber + 1;
 	% x label
     ypos = ytop - (rowNumber*ySpacing);
-    data.optimizeXLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateXLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Lon',...
                 'Units','normalized','Position',[xlbl ypos+labelYOffset llblw labelh]);
 	% x min edit box.
-    data.optimizeXMinEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateXMinEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xl ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeXMinEdit_Callback);
+        'Callback', @evaluateXMinEdit_Callback);
     % x interval edit box.
-    data.optimizeXStepEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateXStepEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xm ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeXStepEdit_Callback);
+        'Callback', @evaluateXStepEdit_Callback);
     % x max edit box.
-	data.optimizeXMaxEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+	data.evaluateXMaxEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xr ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeXMaxEdit_Callback);
+        'Callback', @evaluateXMaxEdit_Callback);
     
 	rowNumber = rowNumber + 1;
 	% y label
     ypos = ytop - (rowNumber*ySpacing);
-    data.optimizeYLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateYLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Lat',...
                 'Units','normalized','Position',[xlbl ypos+labelYOffset llblw labelh]);
 	% x min edit box.
-    data.optimizeYMinEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateYMinEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xl ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeYMinEdit_Callback);
+        'Callback', @evaluateYMinEdit_Callback);
     % x interval edit box.
-    data.optimizeYStepEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateYStepEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xm ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeYStepEdit_Callback);
+        'Callback', @evaluateYStepEdit_Callback);
     % x max edit box.
-	data.optimizeYMaxEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+	data.evaluateYMaxEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOn,...
         'Units','normalized','Position',[xr ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeYMaxEdit_Callback);
+        'Callback', @evaluateYMaxEdit_Callback);
     
 
     rowNumber=rowNumber+1.2;
     ypos = ytop - (rowNumber*ySpacing);
     % Button to set edit limits to boundary of ellipse.
-    data.optimizeSetBoundsPB = uicontrol(data.optimizeParamPanel,'Style','pushbutton',...
+    data.evaluateSetBoundsPB = uicontrol(data.evaluateParamPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[xl ypos+.02 .27 .1],...
                     'Visible', 'on', 'String', 'Set bounds to',...
                     'Enable',stateOff,...
-                    'Callback',@layerOptimizeSetBoundsPB_Callback);
+                    'Callback',@layerEvaluateSetBoundsPB_Callback);
     % Listbox of layers that bounds are allowed to be set to
-    data.optimizeSetBoundsPopup = uicontrol(data.optimizeParamPanel,'Style','popupmenu',...
+    data.evaluateSetBoundsPopup = uicontrol(data.evaluateParamPanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', ' ',...
                 'Value',1,...
                 'Enable',stateOff,...
@@ -1402,38 +1402,38 @@ function figure1_CreateFcn(hObject, eventdata, data)
     % Azimuth label and controls
     rowNumber=rowNumber+1;
     ypos = ytop - (rowNumber*ySpacing);
-    data.optimizeAzLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateAzLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on','String','Az.',...
                 'Units','normalized','Position',[xlbl ypos+labelYOffset llblw labelh]);
     
-    data.optimizeAzMinEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateAzMinEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOff,...
         'Units','normalized','Position',[xl ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeAzMinEdit_Callback);
+        'Callback', @evaluateAzMinEdit_Callback);
     % x interval edit box.
-    data.optimizeAzStepEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+    data.evaluateAzStepEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOff,...
         'Units','normalized','Position',[xm ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeAzStepEdit_Callback);
+        'Callback', @evaluateAzStepEdit_Callback);
     % x max edit box.
-	data.optimizeAzMaxEdit = uicontrol(data.optimizeParamPanel,'Style','edit',...
+	data.evaluateAzMaxEdit = uicontrol(data.evaluateParamPanel,'Style','edit',...
         'Visible', 'on', 'String','',...
         'Enable',stateOff,...
         'Units','normalized','Position',[xr ypos editw edith],...
         'Value',[],...
-        'Callback', @optimizeAzMaxEdit_Callback);
+        'Callback', @evaluateAzMaxEdit_Callback);
 
     % Next row, azimuth units list box
     rowNumber=rowNumber+1;
     ypos = ytop - (rowNumber*ySpacing);
-    data.optimizeAzEditUnitsLabel = uicontrol(data.optimizeParamPanel,'Style','text',...
+    data.evaluateAzEditUnitsLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
                 'Visible', 'on', 'String', 'Azimuth units:',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.optimizeAzEditUnitsListBox = uicontrol(data.optimizeParamPanel,'Style','popupmenu',...
+    data.evaluateAzEditUnitsListBox = uicontrol(data.evaluateParamPanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', angUnitsLabel,...
                 'Value',1,...
                 'Enable',stateOff,...
@@ -1441,85 +1441,85 @@ function figure1_CreateFcn(hObject, eventdata, data)
 
 
     %% Panel to preview and run the evaluation.
-    data.optimizeRunPanel = uipanel('Parent', data.tabOptimize, 'Title', 'RUN',...
+    data.evaluatorunPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'RUN',...
         'FontSize', 11, 'Position', [.04 .31 .92 .18]);
 
     % Button to Preview plot area against ellipse and raster layers.
-    data.optimizePreviewPB = uicontrol(data.optimizeRunPanel,'Style','pushbutton',...
+    data.evaluatePreviewPB = uicontrol(data.evaluatorunPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.05 .6 .3 .35],...
                     'Visible', 'on', 'String', 'Preview',...
                     'Enable',stateOn,...
-                    'Callback',@layerOptimizePreviewPB_Callback);            
+                    'Callback',@layerEvaluatePreviewPB_Callback);            
 
     % Check box to preview with footprints of loaded rasters.
-    data.optimizePlotRasterFootprintCB = uicontrol(data.optimizeRunPanel,'Style','checkbox',...
+    data.evaluatePlotRasterFootprintCB = uicontrol(data.evaluatorunPanel,'Style','checkbox',...
         'Units','normalized','Position',[xm .6-.08 .6 .5],...
         'Visible', 'on', 'String', 'Plot layer footprints',...
         'Enable',stateOff,'Value', 0);
 
-    % Optimize pushbutton
-    data.optimizeOptimizePB = uicontrol(data.optimizeRunPanel,'Style','pushbutton',...
+    % Evaluate pushbutton
+    data.evaluateEvaluatePB = uicontrol(data.evaluatorunPanel,'Style','pushbutton',...
                         'Units','normalized','Position',[.05 .15 .3 .35],...
                         'Visible', 'on', 'String', 'EVALUATE',...
                         'Enable',stateOn,...
                         'BackgroundColor', 'r',...
-                        'Callback',@layerOptimizeOptimizePB_Callback);
+                        'Callback',@layerEvaluateEvaluatePB_Callback);
 
     % Set the enabled state of the controls depending on whether evaluation
     % over azimuth or position is desired.
-    %data = setOptimizeModeControls(data);
+    %data = setEvaluateModeControls(data);
                     
     % --- RESULTS ---
     % When results are returned, the panel becomes enabled.
     % Results panel
-    data.optimizeResultsPanel = uipanel('Parent', data.tabOptimize, 'Title', 'RESULTS',...
+    data.evaluatoresultsPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'RESULTS',...
         'FontSize', 11, 'Position', [.04 .04 .92 .26]);
     
     % Output directory
 
     % Pushbutton to preview results.
-    data.optimizeResultsPreviewPB = uicontrol(data.optimizeResultsPanel,'Style','pushbutton',...
+    data.evaluatoresultsPreviewPB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .76 .34 .18],...
                     'Visible', 'on', 'String', 'Preview',...
                     'Enable', stateOff,...
-                    'Callback',@optimizeResultsPreviewPB_Callback);
+                    'Callback',@evaluatoresultsPreviewPB_Callback);
     
     % Pushbutton to select save directory for results.
-    data.optimizeResultsOutputPB = uicontrol(data.optimizeResultsPanel,'Style','pushbutton',...
+    data.evaluatoresultsOutputPB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .54 .34 .18],...
                     'Visible', 'on', 'String', 'Output dir.',...
                     'Enable', stateOff,...
-                    'Callback',@optimizeResultsOutputPB_Callback);
+                    'Callback',@evaluatoresultsOutputPB_Callback);
     
 	% Edit box for directory in which to output results. No need for a
 	% callback. The contents are filled either by manually entering a path
 	% or selecting one from the OS UI, and validated when the save PB is
 	% pressed.
-    data.optimizeResultsOutputEdit = uicontrol(data.optimizeResultsPanel,'Style','edit',...
+    data.evaluatoresultsOutputEdit = uicontrol(data.evaluatoresultsPanel,'Style','edit',...
                 'Visible', 'on','String','',...
                 'Enable', stateOff,...
                 'Units','normalized','Position',[.4 .56 .57 .14],...
                 'Value',[]);
                     
     % Text label for listbox.
-    data.optimizeResultsFormatLabel = uicontrol(data.optimizeResultsPanel,'Style','text',...
+    data.evaluatoresultsFormatLabel = uicontrol(data.evaluatoresultsPanel,'Style','text',...
                 'Visible', 'on', 'String', 'Output format',...
                 'Units','normalized','Position',[.05 .32 .3 .14]);
     
 	% Listbox to select results format.
     [ffDesc, ~, ~] = getFileFormatList();
-    data.optimizeResultsFormatListBox = uicontrol(data.optimizeResultsPanel,'Style','popupmenu',...
+    data.evaluatoresultsFormatListBox = uicontrol(data.evaluatoresultsPanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', ffDesc,...
                 'Value', 1,...
                 'Enable', stateOff,...
                 'Units', 'normalized', 'Position',[.38 .32 .5 .14]);
     
 	% Pushbutton to save the results.
-    data.optimizeResultsSavePB = uicontrol(data.optimizeResultsPanel,'Style','pushbutton',...
+    data.evaluatoresultsSavePB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .1 .34 .18],...
                     'Visible', 'on', 'String', 'Save',...
                     'Enable', stateOff,...
-                    'Callback',@optimizeResultsSavePB_Callback);
+                    'Callback',@evaluatoresultsSavePB_Callback);
 	
     % --- STATUS ---
     % Grid panel and status message bar.

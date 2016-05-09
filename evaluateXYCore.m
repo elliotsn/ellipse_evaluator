@@ -48,7 +48,7 @@
 % Author : Elliot Sefton-Nash
 % Date   : 20151209
 %
-function result = optimizeXYCore(ellipse, grid, layers, wb)
+function result = evaluateXYCore(ellipse, grid, layers, wb)
 
     if wb
         hWb = waitbar(0,'Initialising...',...
