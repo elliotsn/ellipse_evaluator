@@ -829,7 +829,7 @@ function setStatus(msg)
     data.status.String = msg;
 end
 
-% Evaluate pushbutton callback. DO THE evaluate
+% Evaluate pushbutton callback. DO THE EVALUATE.
 function layerEvaluateEvaluatePB_Callback(hObject, eventdata, handles)
 
     data = guidata(gcbf);
@@ -892,12 +892,13 @@ function layerEvaluateEvaluatePB_Callback(hObject, eventdata, handles)
 	setStatus('Evaluating...');
      
     % data.ellipse, data.grid and data.layers are cell arrays of thier
-    % respective objects, but we pass the grid and ellipse objects to
-    % evaluateXYCore, but a cell array of rasterLayer objects.
+    % respective objects. We pass the grid and ellipse objects to
+    % evaluateXYCore or evaluateAzCore as single objects not embedded in a
+    % cell array. However we DO pass a cell array of rasterLayer objects.
+    
     wb = true; % We want a waitbar.
     
     if azMode
-        % Run assessment.
         data.result = evaluateAzCore(data.ellipse{1}, data.azVec, data.layers, wb);
     else
         % Make sure the grid has map coordinates. It may not have been
@@ -910,6 +911,7 @@ function layerEvaluateEvaluatePB_Callback(hObject, eventdata, handles)
     setStatus('Ready.');
     
     if ~isempty(data.result)
+        
         % There is a result. Make the results panel visible.
         data = setResultsControlsState(data, 'on');
     end
@@ -917,17 +919,20 @@ function layerEvaluateEvaluatePB_Callback(hObject, eventdata, handles)
     guidata(gcbf, data);
 end
 
+
 % Function to set the state of the results panel UI elements.
-function data = setResultsControlsState(data, state)
-    data.evaluatoresultsPreviewPB.Enable = state;
-    data.evaluatoresultsOutputPB.Enable = state;
-    data.evaluatoresultsOutputEdit.Enable = state;
-    data.evaluatoresultsFormatListBox.Enable = state;
-    data.evaluatoresultsSavePB.Enable = state;
+function data = setResultsControlsState(data, state)    
+    % Set control states.
+    data.evaluateResultsPreviewPB.Enable = state;
+    data.evaluateResultsOutputPB.Enable = state;
+    data.evaluateResultsOutputEdit.Enable = state;
+    data.evaluateResultsFormatListBox.Enable = state;
+    data.evaluateResultsSavePB.Enable = state;
 end
 
+
 % Function to select the output directory from the built-in UI.
-function evaluatoresultsOutputPB_Callback(hObject, eventdata, handles)
+function evaluateResultsOutputPB_Callback(hObject, eventdata, handles)
 
     % Open the directory file selection dialogue.
     dirName = uigetdir(matlabroot, 'Select results output directory');
@@ -936,35 +941,35 @@ function evaluatoresultsOutputPB_Callback(hObject, eventdata, handles)
     if ~isnumeric(dirName)        
         data = guidata(gcbf);
         % Set edit box to returned path.
-        data.evaluatoresultsOutputEdit.String = dirName;
+        data.evaluateResultsOutputEdit.String = dirName;
         guidata(gcbf, data);
     end
 end
 
 % Function to write the results
-function evaluatoresultsSavePB_Callback(hObject, eventdata, handles)
+function evaluateResultsSavePB_Callback(hObject, eventdata, handles)
 
 	data = guidata(gcbf);
     % If the results directory is not valid then do not write and set the
     % save path to null.
-    if ~exist(data.evaluatoresultsOutputEdit.String,'dir')
-        data.evaluatoresultsOutputEdit.String = '';
+    if ~exist(data.evaluateResultsOutputEdit.String,'dir')
+        data.evaluateResultsOutputEdit.String = '';
         % Warn here that the data directory is not valid.
         warn('Data output directory is invalid.');
     else
         setStatus('Saving results.');
         % Save the results in desired format, ext is the identifier (not
         % desc, which is the string of the list box).
-        [~, ext, ~] = getFileFormatList();
-        outfpath = [data.evaluatoresultsOutputEdit.String,'result_',getTimeStrNow()];
-        data.result.write(ext(data.evaluatoresultsFormatListBox.Value), outfpath);
+        [~, ext, ~] = getFileFormatWriteList();
+        outfpath = [data.evaluateResultsOutputEdit.String,'result_',getTimeStrNow()];
+        data.result.write(ext(data.evaluateResultsFormatListBox.Value), outfpath);
         setStatus('Ready.');
     end
     guidata(gcbf, data);
 end
 
 % Function to preview the results.
-function evaluatoresultsPreviewPB_Callback(hObject, eventdata, data)
+function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
     
     data = guidata(gcbf);
     
@@ -1029,12 +1034,12 @@ function data = setEvaluateModeState(data)
     % Set the mode as an integer in a top-level variable.
     data.mode = data.evaluateModeListBox.Value;
 
-    opModes = getEvaluateModes();
+    evalModes = getEvaluateModes();
     
     % Find the value of the azimuth list box and set it.
     stateOn = 'on';
     stateOff = 'off';
-    switch opModes{data.evaluateModeListBox.Value}
+    switch evalModes{data.evaluateModeListBox.Value}
         case 'azimuth'
             % Make azimuth evaluator controls active, but disable lat-lon.
             
@@ -1072,11 +1077,16 @@ function data = setEvaluateModeState(data)
                 data.evaluateSetBoundsPopup.Enable = stateOn;
             end
     end
+    
+    % Set the content of the write file formats list box.
+    [desc, ~, ~] = getFileFormatWriteList(data.mode);
+    data.evaluateResultsFormatListBox.String = desc;
+ 
 end
 
 
 % --- Executes during object creation, after setting all properties.
-function figure1_CreateFcn(hObject, eventdata, data)
+function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
     % hObject    handle to figure1 (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % data    empty - data not created until after all CreateFcns called
@@ -1086,16 +1096,16 @@ function figure1_CreateFcn(hObject, eventdata, data)
     data.re = 3396190;
     
     % Set up projection parameters for Lambert Equal Area Cylindrical,
-    % which everything is plot.
+    % in which everything is plot.
     data.proj.lat1 = 0;  % 1st standard parallel at equator.
     data.proj.lonO = 0;  % Prime meridian at 0 degrees.
     
     data.fig = hObject;
     data.fig.Units = 'pixels';
-    data.fig.Position = [600 400 1200 600];
+    data.fig.Position = [600 400 1400 900];
     data.fig.Resize = 'on';
     
-    % Make tab group
+    % Make tab groups
     data.tabgroup = uitabgroup(data.fig,'Position',[.02 .08 .28 .9]);
     data.tabLayers = uitab(data.tabgroup,'Title','Layers');
     data.tabEllipse = uitab(data.tabgroup,'Title','Ellipse');
@@ -1249,11 +1259,6 @@ function figure1_CreateFcn(hObject, eventdata, data)
                 'Units','normalized','Position',[xm ypos editw edith],...
                 'Value',180,...
                 'Callback', @ellipseXEdit_Callback);
-% 	data.ellipseXEditUnitsListBox = uicontrol(data.tabEllipse,'Style','popupmenu',...
-%                 'Visible', 'on', 'String', lengthUnitsLabel,...
-%                 'Value',2,...
-%                 'Enable',state,...
-%                 'Units','normalized','Position',[xr ypos listboxw listboxh]);
 
 	% Ellipse latitude position (-90 to 90). Default is equator.
     rowNumber = rowNumber + 1;
@@ -1319,9 +1324,7 @@ function figure1_CreateFcn(hObject, eventdata, data)
 
     rowNumber = rowNumber + 1;
 	% x label
-    ypos = ytop - (rowNumber*ySpacing) - 0.03;
-    %ypos = ytop - .02;%(rowNumber*ySpacing);
-    
+    ypos = ytop - (rowNumber*ySpacing) - 0.03;    
     
     % minlabel
     data.evaluateMinLabel = uicontrol(data.evaluateParamPanel,'Style','text',...
@@ -1474,61 +1477,59 @@ function figure1_CreateFcn(hObject, eventdata, data)
                         'BackgroundColor', 'r',...
                         'Callback',@layerEvaluateEvaluatePB_Callback);
 
-    % Set the enabled state of the controls depending on whether evaluation
-    % over azimuth or position is desired.
-    %data = setEvaluateModeControls(data);
-                    
+
     % --- RESULTS ---
     % When results are returned, the panel becomes enabled.
     % Results panel
-    data.evaluatoresultsPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'RESULTS',...
+    data.evaluateResultsPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'RESULTS',...
         'FontSize', 11, 'Position', [.04 .04 .92 .26]);
     
     % Output directory
 
     % Pushbutton to preview results.
-    data.evaluatoresultsPreviewPB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
+    data.evaluateResultsPreviewPB = uicontrol(data.evaluateResultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .76 .34 .18],...
                     'Visible', 'on', 'String', 'Preview',...
                     'Enable', stateOff,...
-                    'Callback',@evaluatoresultsPreviewPB_Callback);
+                    'Callback',@evaluateResultsPreviewPB_Callback);
     
     % Pushbutton to select save directory for results.
-    data.evaluatoresultsOutputPB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
+    data.evaluateResultsOutputPB = uicontrol(data.evaluateResultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .54 .34 .18],...
                     'Visible', 'on', 'String', 'Output dir.',...
                     'Enable', stateOff,...
-                    'Callback',@evaluatoresultsOutputPB_Callback);
+                    'Callback',@evaluateResultsOutputPB_Callback);
     
 	% Edit box for directory in which to output results. No need for a
 	% callback. The contents are filled either by manually entering a path
 	% or selecting one from the OS UI, and validated when the save PB is
 	% pressed.
-    data.evaluatoresultsOutputEdit = uicontrol(data.evaluatoresultsPanel,'Style','edit',...
+    data.evaluateResultsOutputEdit = uicontrol(data.evaluateResultsPanel,'Style','edit',...
                 'Visible', 'on','String','',...
                 'Enable', stateOff,...
                 'Units','normalized','Position',[.4 .56 .57 .14],...
                 'Value',[]);
                     
     % Text label for listbox.
-    data.evaluatoresultsFormatLabel = uicontrol(data.evaluatoresultsPanel,'Style','text',...
+    data.evaluateResultsFormatLabel = uicontrol(data.evaluateResultsPanel,'Style','text',...
                 'Visible', 'on', 'String', 'Output format',...
                 'Units','normalized','Position',[.05 .32 .3 .14]);
     
-	% Listbox to select results format.
-    [ffDesc, ~, ~] = getFileFormatList();
-    data.evaluatoresultsFormatListBox = uicontrol(data.evaluatoresultsPanel,'Style','popupmenu',...
-                'Visible', 'on', 'String', ffDesc,...
+	% Listbox to select results format. Output formats available depend on
+	% the operation mode.
+    [desc, ~, ~] = getFileFormatWriteList(data.mode);
+    data.evaluateResultsFormatListBox = uicontrol(data.evaluateResultsPanel,'Style','popupmenu',...
+                'Visible', 'on', 'String', desc,...
                 'Value', 1,...
                 'Enable', stateOff,...
                 'Units', 'normalized', 'Position',[.38 .32 .5 .14]);
     
 	% Pushbutton to save the results.
-    data.evaluatoresultsSavePB = uicontrol(data.evaluatoresultsPanel,'Style','pushbutton',...
+    data.evaluateResultsSavePB = uicontrol(data.evaluateResultsPanel,'Style','pushbutton',...
                     'Units','normalized','Position',[.02 .1 .34 .18],...
                     'Visible', 'on', 'String', 'Save',...
                     'Enable', stateOff,...
-                    'Callback',@evaluatoresultsSavePB_Callback);
+                    'Callback',@evaluateResultsSavePB_Callback);
 	
     % --- STATUS ---
     % Grid panel and status message bar.

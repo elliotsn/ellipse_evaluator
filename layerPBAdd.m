@@ -7,11 +7,11 @@ function rasterLayers = layerPBAdd()
 
     % Open the file selection dialogue, allowing only these files to be
     % selected for opening.
-    filterSpec = {'*.img','*.img - IMG file containing single band raster. Must have accompanying .lbl file.';...
-                  '*.cub','*.cub - USGS ISIS format cub file.';...
-                  '*.tif','*.tif - TIFF image file. Must have accompanying .tfw worldfile.'};
-                  %'*.mat','*.mat - Matlab file. Must contain 2D array named z and corressponding x & y vectors.'};
-
+    % Function to return the list of supported file formats and thier extensions.
+    [desc, ext, ~] = getFileFormatReadList();
+    ext = cellfun(@(x) ['*.' x], ext, 'UniformOutput', false);
+    filterSpec = [ext', desc'];
+    
     % Open the dialogue.
     % TODO, make work for multiselect = 'on'
     [fileName, pathName, ~] = uigetfile(filterSpec,'Add Raster Layer',...
