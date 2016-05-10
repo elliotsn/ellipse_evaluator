@@ -1,3 +1,3 @@
-function opModes = getEvaluateModes()
-    opModes = {'lat-lon', 'azimuth'};
+function evalModes = getEvaluateModes()
+    evalModes = {'lat-lon', 'azimuth'};
 end

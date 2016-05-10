@@ -68,69 +68,98 @@ classdef resultObj
         
         % Method to write the results package according to the required
         % format.
-        function success = write(obj, fmt, fpath)
+        function success = write(obj, modeInd, fmtInd, fpath)
             
-            switch fmt
-                case 'tif'
+            % Depending on function 
+            modes = getEvaluateModes();
+            
+            % File extension to determine which write block is called.
+            [~, exts, ~] = getFileFormatWriteList(modeInd);
+            
+            switch modes{modeInd}
+                case 'lat-lon'
                     
-                    % Write a tiff+tfw, this functionality means we don't
-                    % need the mapping toolbox (geotiffwrite would
-                    % otherwise be used).
-                    %imwrite(
-                    
-                    
-                    % Write the bsq file.
-                    multibandwrite(im, bsqfpath, 'bsq', 'machfmt', 'ieee-be', 'precision', 'uint8');
+                    switch exts{fmtInd}
+                        case 'tif'
 
-                    % Get params for header and write header file, assuming equidistant
-                    % cylindrical and that latvec and lonvec represent the lower left of
-                    % pixels.
+                            % Write a tiff+tfw, this functionality means we don't
+                            % need the mapping toolbox (geotiffwrite would
+                            % otherwise be used).
+                            %imwrite(
 
-                    % Get upper left of map in plate carree, assumes east longitude.
-                    [xmap, ymap] = latlon2platecaree(latvec, lonvec, rp);
-                    ulxmap = min(xmap);
-                    ulymap = max(ymap);
 
-                    % Pixel size in plate carree, based on average max,min difference
-                    s = size(im);
-                    ydim = mean(diff(ymap));
-                    xdim = mean(diff(xmap));
+                            % Write the bsq file.
+                            multibandwrite(im, bsqfpath, 'bsq', 'machfmt', 'ieee-be', 'precision', 'uint8');
 
-                    %% Write header file
-                    % Open the ASCII file for writing
-                    hdrfpath= [bsqfpath(1:end-3), 'hdr'];
-                    fid = fopen(hdrfpath, 'w');
+                            % Get params for header and write header file, assuming equidistant
+                            % cylindrical and that latvec and lonvec represent the lower left of
+                            % pixels.
 
-                    % Write the values.
-                    fprintf(fid, ['nrows ', num2str(s(1)), ' \n']);
-                    fprintf(fid, ['ncols ', num2str(s(2)), ' \n']);
-                    fprintf(fid, 'nbands 1\n');
-                    fprintf(fid, 'byteorder M\n');
-                    fprintf(fid, 'layout bsq\n');
-                    fprintf(fid, 'nbits 8\n');
-                    fprintf(fid, ['xdim ', num2str(xdim),'\n']); % dimensions of pixels in map units
-                    fprintf(fid, ['ydim ', num2str(ydim),'\n']);
-                    fprintf(fid, ['ulxmap ', num2str(ulxmap), '\n']);
-                    fprintf(fid, ['ulymap ', num2str(ulymap), '\n']);
+                            % Get upper left of map in plate carree, assumes east longitude.
+                            [xmap, ymap] = latlon2platecaree(latvec, lonvec, rp);
+                            ulxmap = min(xmap);
+                            ulymap = max(ymap);
 
-                    fclose(fid);
+                            % Pixel size in plate carree, based on average max,min difference
+                            s = size(im);
+                            ydim = mean(diff(ymap));
+                            xdim = mean(diff(xmap));
+
+                            %% Write header file
+                            % Open the ASCII file for writing
+                            hdrfpath= [bsqfpath(1:end-3), 'hdr'];
+                            fid = fopen(hdrfpath, 'w');
+
+                            % Write the values.
+                            fprintf(fid, ['nrows ', num2str(s(1)), ' \n']);
+                            fprintf(fid, ['ncols ', num2str(s(2)), ' \n']);
+                            fprintf(fid, 'nbands 1\n');
+                            fprintf(fid, 'byteorder M\n');
+                            fprintf(fid, 'layout bsq\n');
+                            fprintf(fid, 'nbits 8\n');
+                            fprintf(fid, ['xdim ', num2str(xdim),'\n']); % dimensions of pixels in map units
+                            fprintf(fid, ['ydim ', num2str(ydim),'\n']);
+                            fprintf(fid, ['ulxmap ', num2str(ulxmap), '\n']);
+                            fprintf(fid, ['ulymap ', num2str(ulymap), '\n']);
+
+                            fclose(fid);
+
+                        case 'png'
+
+                        case 'jpg'
+
+                        case 'jp2'
+
+                        case 'bsq'
+                            [~, ~] = writeGeoBsq(latvec, lonvec, im, fpath, rp);
+
+                    end
+
+                case 'azimuth'
+                    
+                    % Always write summary plots.
+                    
+                    % Plot to
                     
                     
-                    
-                    
-                case 'png'
-                    
-                case 'jpg'
+                    switch exts{fmtInd}
+                        case 'txt'
+                            % Write an ASCII file containing a vector of
+                            % azimuths and compliant ellipse fractions for
+                            % each layer, and total.
+                            
                         
-                case 'jp2'
-                    
-                case 'bsq'
-                    [~, ~] = writeGeoBsq(latvec, lonvec, im, fpath, rp);
-                    
+                        case 'mat'
+                            % Write Matlab format results.
+                            
+                            
+                    end
                     
             end
             
         end
+        
+     
         
         
     end

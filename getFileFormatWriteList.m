@@ -12,8 +12,8 @@ function [desc, ext, aux] = getFileFormatWriteList(evalMode)
             aux = {'lbl', 'tfw', 'pgw', '', '', 'hdr'};
             
         case 'azimuth'
-            desc = {'Textfile', 'TIFF','PNG', 'Matlab', 'Band-sequential'};
-            ext = {'.txt',      'tif', 'png', 'mat',    'bsq'};
-            aux = {'',          'tfw', 'pgw', '',       'hdr'};
+            desc = {'Textfile', 'TIFF', 'PNG', 'Matlab', 'Band-sequential'};
+            ext  = {'txt',      'tif' , 'png', 'mat',    'bsq'};
+            aux  = {'',          'tfw', 'pgw', '',       'hdr'};
     end
 end

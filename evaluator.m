@@ -960,9 +960,8 @@ function evaluateResultsSavePB_Callback(hObject, eventdata, handles)
         setStatus('Saving results.');
         % Save the results in desired format, ext is the identifier (not
         % desc, which is the string of the list box).
-        [~, ext, ~] = getFileFormatWriteList();
-        outfpath = [data.evaluateResultsOutputEdit.String,'result_',getTimeStrNow()];
-        data.result.write(ext(data.evaluateResultsFormatListBox.Value), outfpath);
+        outfpath = [data.evaluateResultsOutputEdit.String,'/ee_result_',getTimeStrNow()];
+        data.result.write(data.mode, data.evaluateResultsFormatListBox.Value, outfpath);
         setStatus('Ready.');
     end
     guidata(gcbf, data);
@@ -981,31 +980,12 @@ function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
         % Plot ellTrueFrac, the cumulative result for all layers, 
         % as a function of ellipse azimuth.
         cla(data.ax);
+        data.ax = plotEllFracVsAz(data.ax, data.layers, data.result);
         
-        % Plot lines for ellLayerTrueFrac for each layer. ellLayerTrueFrac
-        % should be an nlayer x naz.
-        legStr = cell(1,data.nlayers+1);
-        for il = 1:data.nlayers         
-            plot(data.result.azvecd, squeeze(data.result.ellLayerTrueFrac(il, :)),...
-            'Parent',data.ax,...
-            'Marker','^');
-            if il == 1
-                hold on
-            end
-            legStr{il} = data.layers{il}.fname;
-        end
-        legStr{end} = 'Total compliant ellipse fraction';
-        plot(data.result.azvecd, data.result.ellTrueFrac,...
-            'Parent',data.ax, 'LineWidth', 2,...
-            'Color','k','Marker','+');
-        set(data.ax,...
-            'XLim',[min(data.result.azvecd) max(data.result.azvecd)]);
-        xlabel('Azimuth$^\circ$','Interpreter','latex');
-        ylabel('Ellipse fraction','Interpreter','latex');
-        title('Ellipse fraction at azimuth that meets layer constraints');
-        hold off
-        legend(legStr);
     else
+        
+        data.ax = plotEllFracGrid
+        
         % Assumption is that the results object contains results over a
         % spatial grid object.
         
