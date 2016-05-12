@@ -3,7 +3,8 @@
 % of azimuth, on the axes hAx. layers is a cell array of layer objects.
 % result is a single result object calculated in azimuth evaluation mode.
 %
-function hAx = plotEllFracVsAz(hAx, layers, result)
+function [hAx, hTitle, hXLab, hYLab, hLeg] = ...
+    plotEllFracVsAz(hAx, layers, result)
 
     nlayers = numel(layers);
     % Plot lines for ellLayerTrueFrac for each layer. ellLayerTrueFrac
@@ -26,9 +27,9 @@ function hAx = plotEllFracVsAz(hAx, layers, result)
     'Color','k','Marker','+');
     
     set(hAx, 'XLim',[min(result.azvecd) max(result.azvecd)]);
-    xlabel('Azimuth$^\circ$','Interpreter','latex');
-    ylabel('Ellipse fraction','Interpreter','latex');
-    title('Ellipse fraction at azimuth that meets layer constraints');
+    hXLab = xlabel('Azimuth$^\circ$','Interpreter','latex');
+    hYLab = ylabel('Ellipse fraction','Interpreter','latex');
+    hTitle = title('Ellipse fraction at azimuth that meets layer constraints');
     
     hold off
-    legend(legStr);
+    hLeg = legend(legStr);

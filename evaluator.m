@@ -327,7 +327,7 @@ function layerPBPreview_Callback(hObject, eventdata, handles)
     data = guidata(gcbf); 
     
     % Clear the plot axes.
-    cla(data.ax);
+    cla(data.plot.hAx);
     
      % Index of selected layer with threshold applied.
     i = data.layerListBox.Value;
@@ -336,15 +336,15 @@ function layerPBPreview_Callback(hObject, eventdata, handles)
     
     imagesc(data.layers{i}.lonvec,data.layers{i}.latvec,...
         data.layers{i}.im,'AlphaData',data.layers{i}.mask,...
-        'Parent',data.ax);
+        'Parent',data.plot.hAx);
     
-    data.ax.YDir = 'normal';
-    data.ax.DataAspectRatio = [1 1 1];
-    xlabel('Longitude');
-    ylabel('Latitude');
+    data.plot.hAx.YDir = 'normal';
+    data.plot.hAx.DataAspectRatio = [1 1 1];
+    xlabel(data.plot.hAx, 'Longitude');
+    ylabel(data.plot.hAx, 'Latitude');
     
     % Set title to name of plotted layer
-    title(data.layers{i}.fname,'Interpreter','none');
+    title(data.plot.hAx, data.layers{i}.fname, 'Interpreter','none');
     
     % Nothing to change in the raster layer, so no need to put back the
     % guidata.
@@ -490,10 +490,10 @@ function layerEllipsePreviewPB_Callback(hObject, eventdata, handles)
     % loaded, then plot the footprints of all the raster layers.
     if data.ellipseRasterFootprintCB.Value == 1 && data.nlayers > 0
         % Clear the plot axes.
-        cla(data.ax);
+        cla(data.plot.hAx);
         titleStr = 'Layer Footprints';
         setStatus('Plotting layer footprints...');
-        plotLayerFootprints(data.layers, data.ax);
+        plotLayerFootprints(data.layers, data.plot.hAx);
         setStatus('Ready.');
     end
     
@@ -547,19 +547,19 @@ function layerEllipsePreviewPB_Callback(hObject, eventdata, handles)
         % then clear the axes, because a previous plot might persist. Can
         % tell by setting of titleStr.
         if isempty(titleStr)
-            cla(data.ax);
+            cla(data.plot.hAx);
         end
         
         % Convention is that hold is normally turned off and re-turned on every time 
         % overlay plotting is required. hold may have been off either because no rasters 
         % were drawn, or because it was set back to off in the function plotRasterLayers.
-        hold(data.ax, 'on');
-        plotEllipse(data.ellipse{1}, data.ax);
-        title('Ellipse');
-        hold(data.ax, 'off');
+        hold(data.plot.hAx, 'on');
+        plotEllipse(data.ellipse{1}, data.plot.hAx);
+        title(data.plot.hAx, 'Ellipse');
+        hold(data.plot.hAx, 'off');
         
         % Wrap the axes to its children
-        axis(data.ax, 'tight');
+        axis(data.plot.hAx, 'tight');
         
         % Update title, allowing for it already to be populated.
         piece = '';
@@ -574,7 +574,7 @@ function layerEllipsePreviewPB_Callback(hObject, eventdata, handles)
     
     % Update title if anything has been plotted.
     if ~isempty(titleStr)
-        title(titleStr);
+        title(data.plot.hAx, titleStr);
     end
     setStatus('Ready.');
 end
@@ -684,12 +684,25 @@ end
 function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
     
+    % Check if a valid ellipse exists, if not there is no point in
+    % continuing.
+    if isfield(data, 'ellipse')
+        if isempty(data.ellipse) || ~iscell(data.ellipse)
+            setStatus('No valid ellipse defined.')
+            return
+        end
+    else
+        setStatus('No ellipse defined.')
+        return
+    end
+
     azMode = getAzMode(data.mode);
     
     % We always plot the cumulative ellipse perimeter and the ellipse
     % centres. If there are large numbers of ellipses the perimeter could just be a 
     % bounding rectangle to speed up the calculation.
     setStatus('Calculating...');
+    
     if azMode
 
         % Check for valid azimuth vector definitions.
@@ -711,12 +724,15 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
                     data.ellipse{1}, azVec, data.re, data.proj.lat1, data.proj.lonO);
                 
                 % Plot the enclosing area.
-                plotExtentPatch(data.ax,xEllPoly,yEllPoly);
+                plotExtentPatch(data.plot.hAx,xEllPoly,yEllPoly);
             catch
                 % Vector is invalid
                 setStatus('Azimuth definition is invalid.');
                 return
             end
+        else
+            setStatus('No valid azimuth vector entered.');
+            return
         end
  
     else % Grid mode
@@ -737,32 +753,18 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
                 setStatus('Grid definition is invalid.');
                 return
             end
-            
-            % Check if ellipse cell array exists and has an ellipse data type in it.
-            if isfield(data, 'ellipse')
-                if ~isempty(data.ellipse) && iscell(data.ellipse)
 
-                    % A valid grid exists if we are here, so find the outer
-                    % boundary of ellipses at the corners of the grid 
-                    % (in lat,lon). Ellipses are drawn in equal area 
-                    % projection, grid is defined in lat lon, but must 
-                    % convert it to working projection to figure out extent
-                    data.grid{1} = data.grid{1}.getEqaXYFromLatLon(...
-                        data.re,data.proj.lat1,data.proj.lonO);
+            % A valid grid exists if we are here, so find the outer
+            % boundary of ellipses at the corners of the grid 
+            % (in lat,lon). Ellipses are drawn in equal area 
+            % projection, grid is defined in lat lon, but must 
+            % convert it to working projection to figure out extent
+            data.grid{1} = data.grid{1}.getEqaXYFromLatLon(...
+                data.re,data.proj.lat1,data.proj.lonO);
 
-                    % How many
-                    
-                    [xEllPoly, yEllPoly] = getEllipseExtentOnGrid(...
-                        data.ellipse{1}, data.grid{1},...
-                        data.re, data.proj.lat1, data.proj.lonO);
-                else
-                    setStatus('No valid ellipse defined.')
-                    return
-                end 
-            else
-                setStatus('No ellipse defined.')
-                return
-            end
+            [xEllPoly, yEllPoly] = getEllipseExtentOnGrid(...
+                data.ellipse{1}, data.grid{1},...
+                data.re, data.proj.lat1, data.proj.lonO);
         else
             setStatus('No valid grid defined.')
             return
@@ -770,20 +772,20 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
     end
     
     % If we made it here, grid or azVec is valid.
-    cla(data.ax);
+    cla(data.plot.hAx);
     setStatus('Plotting...');
 
     % PLOT RASTER FOOTPRINTS
     % If the check box is enabled and checked, plot raster layer footprints.
     if strcmpi(data.evaluatePlotRasterFootprintCB.Enable, 'on') && ...
                data.evaluatePlotRasterFootprintCB.Value == 1
-        hold(data.ax, 'on');
-        plotLayerFootprints(data.layers, data.ax);
-        hold(data.ax, 'off');
+        hold(data.plot.hAx, 'on');
+        plotLayerFootprints(data.layers, data.plot.hAx);
+        hold(data.plot.hAx, 'off');
     end
 
     % Plot the ellipse bounding polygon.
-    plotExtentPatch(data.ax,xEllPoly,yEllPoly);
+    plotExtentPatch(data.plot.hAx,xEllPoly,yEllPoly);
 
     % Plot the ellipse centres.
     if azMode
@@ -794,10 +796,10 @@ function layerEvaluatePreviewPB_Callback(hObject, eventdata, handles)
         % each pixel.
         [xp,yp] = meshgrid(data.grid{1}.lonc, data.grid{1}.latc);
     end
-    hold(data.ax, 'on');
-    plot(xp(:), yp(:), 'k+', 'Parent',data.ax);            
-    hold(data.ax, 'off');
-    title('Ellipse extents');
+    hold(data.plot.hAx, 'on');
+    plot(xp(:), yp(:), 'k+', 'Parent',data.plot.hAx);            
+    hold(data.plot.hAx, 'off');
+    title(data.plot.hAx, 'Ellipse extents');
 
     guidata(gcbf, data);
     setStatus('Ready.');
@@ -826,7 +828,7 @@ end
 % Status
 function setStatus(msg)
     data = guidata(gcbf);
-    data.status.String = msg;
+    data.status.String = ['STATUS: ', msg];
 end
 
 % Evaluate pushbutton callback. DO THE EVALUATE.
@@ -979,12 +981,13 @@ function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
         
         % Plot ellTrueFrac, the cumulative result for all layers, 
         % as a function of ellipse azimuth.
-        cla(data.ax);
-        data.ax = plotEllFracVsAz(data.ax, data.layers, data.result);
+        cla(data.plot.hAx);
+        [data.hAx, data.hTitle, data.hXLab, data.hYLab, data.hLeg] = ...
+            plotEllFracVsAz(data.plot.hAx, data.layers, data.result);
         
     else
-        
-        data.ax = plotEllFracGrid
+        % TODO
+        data.plot.hAx = plotEllFracGrid
         
         % Assumption is that the results object contains results over a
         % spatial grid object.
@@ -992,16 +995,18 @@ function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
         % Plot ellTrueFrac, this is the cumulative result for all layers. By
         % plotting only this in the preview functionality we avoid hard choices
         % on how to display the results w.r.t. each layer.
-        cla(data.ax);
+        cla(data.plot.hAx);
         imagesc(data.result.grid.lonc,data.result.grid.latc,...
             data.result.ellTrueFrac,...
-            'Parent',data.ax);
+            'Parent',data.plot.hAx);
         colorbar;
-        data.ax.YDir = 'normal';
-        data.ax.DataAspectRatio = [1 1 1];
-        xlabel('Longitude');
-        ylabel('Latitude');
-        title('Fraction of ellipse at pixel center that meets layer constraints','Interpreter','none');
+        data.plot.hAx.YDir = 'normal';
+        data.plot.hAx.DataAspectRatio = [1 1 1];
+        xlabel(data.plot.hAx, 'Longitude');
+        ylabel(data.plot.hAx, 'Latitude');
+        title(data.plot.hAx,...
+            'Fraction of ellipse at pixel center that meets layer constraints',...
+            'Interpreter','none');
     end
 end
 
@@ -1064,6 +1069,40 @@ function data = setEvaluateModeState(data)
  
 end
 
+% Save plot
+function plotSavePB_Callback(hObject, eventdata, data)
+
+    data = guidata(gcbf);
+
+    % Luckily there is a function that does most of this for us.
+    defaultName = ['ee_',getTimeStrNow()];
+    
+    % List of file types and descriptions.
+    [desc, ext] = getImageFormatWriteList();
+    extAst = cellfun(@(x) ['*.' x], ext, 'UniformOutput', false);
+    filterSpec = [extAst', desc'];
+
+    [filename, pathname] = uiputfile(filterSpec, 'Save Plot As', defaultName);
+    
+    if ~isequal(filename,0) && ~isequal(pathname,0)
+        % Save this file using the given extension.
+        fpath = fullfile(pathname, filename);
+        
+        % Allows for extensions that are not exactly 3 characters.
+        thisExt = lower(reverse(strtok(reverse(fpath),'.')));
+        
+        % Sanity check on extension
+        if any(strcmp(ext,thisExt))
+            success = writeAx(data.plot, fpath, thisExt);
+            if isempty(success)
+                setStatus('File save failed.');
+            end
+        else
+            setStatus('Invalid image file format, plot not saved.'); 
+        end
+    end
+end
+
 
 % --- Executes during object creation, after setting all properties.
 function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
@@ -1081,12 +1120,15 @@ function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
     data.proj.lonO = 0;  % Prime meridian at 0 degrees.
     
     data.fig = hObject;
-    data.fig.Units = 'pixels';
-    data.fig.Position = [600 400 1400 900];
-    data.fig.Resize = 'on';
-    
+%     data.fig.Units = 'pixels';
+%     data.fig.Position = [600 400 1480 780];
+%     data.fig.Resize = 'on';
+%     data.fig.PaperType = 'A3';
+%     data.fig.PaperOrientation = 'Landscape';
+%     
     % Make tab groups
-    data.tabgroup = uitabgroup(data.fig,'Position',[.02 .08 .28 .9]);
+    data.tabgroup = uitabgroup(data.fig,'Position',[.01 .11 .28 .88],...
+        'Units', 'normalized');
     data.tabLayers = uitab(data.tabgroup,'Title','Layers');
     data.tabEllipse = uitab(data.tabgroup,'Title','Ellipse');
     data.tabEvaluate = uitab(data.tabgroup,'Title','Evaluate');
@@ -1511,24 +1553,41 @@ function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
                     'Enable', stateOff,...
                     'Callback',@evaluateResultsSavePB_Callback);
 	
+	% --- SAVE PLOT ---
+    % Browse directory, select directory and save format select button to 
+    % save the current figure.
+    data.plotSavePB = uicontrol(data.fig,'Style','pushbutton',...
+                    'Units','normalized','Position',[.095 .06 .1 .04],...
+                    'Visible', 'on', 'String', 'Save Plot',...
+                    'FontSize',12,...
+                    'Enable', stateOn,...
+                    'Callback',@plotSavePB_Callback);
+
     % --- STATUS ---
-    % Grid panel and status message bar.
-    data.statusPanel = uipanel('Parent', data.fig, 'Title', 'STATUS',...
-        'FontSize', 11, 'Position', [.027 .03 .266 .05],...
-        'Units', 'normalized', 'Visible', 'on');
-    data.status = uicontrol(data.statusPanel, 'Units', 'normalized', 'Visible', 'on',...
-        'Style', 'text', 'String', 'Ready.', 'Position', [0 0 1 1]);
+    data.status = uicontrol(data.fig,'Units', 'normalized', 'Visible', 'on',...
+        'Style', 'text', 'String', 'STATUS: Ready.',...
+        'HorizontalAlignment', 'left', 'Position', [.015 .025 .28 .02],...
+        'FontSize', 12);
     
     % --- AXES ---
-    data.ax = axes('Position',[.42 .08 .52 .86],...
+    data.plot.hAx = axes('Position',[.32 .08 .62 .86],...
         'Box','on',...
-        'PlotBoxAspectRatio',[1 1 1]);
+        'PlotBoxAspectRatio',[1 1 1],...
+        'Parent', data.fig);
 
-    xlabel('Longitude');
-    ylabel('Latitude');
+    xlabel(data.plot.hAx, 'Longitude');
+    ylabel(data.plot.hAx, 'Latitude');
+    % Set up empty legend handle
+    data.plot.hLeg = [];
     
     % Initialize number of layers loaded
     data.nlayers = 0;
+    
+    % Set all text objects in the tabgroup to have size 11 font
+    set(findall(data.tabgroup,'type','uicontrol'),'FontSize',11);
+    
+    % Panel containers have 12
+    set(findall(data.tabgroup,'type','uipanel'),'FontSize',12);
     
     % Set data back into guidata. In this case hObject is actually gcbf,
     % it's just it won't have been created until after this function is
