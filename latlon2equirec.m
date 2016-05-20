@@ -13,8 +13,7 @@
 %   x - equirectangular x coordinate
 %   y - equirectangular y coordinate
 %
-% Author: Elliot Sefton-Nash    Date: 20160209
-%
+%  Copyright 2016  Elliot Sefton-Nash
 function [x, y] = latlon2equirec(lat, lon, r, lat1, lon0)
     x = r*deg2rad(lon-lon0)*cosd(lat1);
     y = r*deg2rad(lat);

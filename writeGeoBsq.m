@@ -1,11 +1,8 @@
+% Function to write an arc-friendly BSQ from a 2D image array and its lat
+% and lonvec. rp is the radius of the planet, which is assumed to be
+% spherical.
 %
-% Function to write an arc-friendly BSQ from a 2D image array and it's lat
-% and lonvec.
-%
-% rp is the radius of the planet
-%
-% Elliot Sefton-Nash 20150909
-%
+%  Copyright 2016  Elliot Sefton-Nash
 function [bsqfpath, hdrfpath] = writeGeoBsq(latvec, lonvec, im, bsqfpath, rp)
 
     % Write the bsq file.

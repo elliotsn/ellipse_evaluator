@@ -3,6 +3,7 @@
 % coordinates.
 % grd used as name because 'grid' already taken.
 % 
+%  Copyright 2016  Elliot Sefton-Nash
 classdef grdObj
    
     properties(GetAccess = 'public', SetAccess = 'public')

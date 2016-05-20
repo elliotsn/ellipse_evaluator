@@ -1,5 +1,7 @@
 % Function to plot the footprints of all the loaded raster layer objects 
 % onto the axis handle passed in hAx.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function plotLayerFootprints(layers, hAx)
 
     % Get color pallette to plot layers.

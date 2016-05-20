@@ -1,4 +1,6 @@
 % Function to validate and create a linear space defined by its limits and interval.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function vec = getVec(lims, step)
     d = diff(lims);
     if d == 0

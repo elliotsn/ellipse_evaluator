@@ -1,4 +1,6 @@
 % Function to validate and return a string and a value for 0-360 longitude.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [s, v] = validLon(s)
     v = validNumeric(s);
     if isempty(v)

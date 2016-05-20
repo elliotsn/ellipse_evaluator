@@ -11,10 +11,7 @@
 % Outputs:
 %   xout,yout - vectors of points describing ellipse. Origin, centre of ellipse is at 0,0.
 %
-%
-% Author : Elliot Sefton-Nash (e.sefton-nash@uclmail.net)
-% Date   : 20151125
-%
+%  Copyright 2016  Elliot Sefton-Nash
 function [xout, yout] = getEllipseVertices(xa, ya, r, angRes)
     
     % Vector of angles for which to calculate ellipse x,y vertices.

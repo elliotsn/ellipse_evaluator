@@ -1,5 +1,7 @@
 % Function to return the list of supported file formats and thier 
 % extensions. Accepts evalMode, an integer denoting the mode of evaluation.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [desc, ext, aux] = getFileFormatWriteList(evalMode)
     
     evalModes = getEvaluateModes();

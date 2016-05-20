@@ -11,6 +11,7 @@
 % Outputs:
 %   ind  - index of point position in vec
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function ind = getVecPointInd(vec, p)
 
     n = numel(vec);

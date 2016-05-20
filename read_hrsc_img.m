@@ -14,9 +14,7 @@ function [id, core, corelonvec, corelatvec]=read_hrsc_img(infile)
 %       -'corelonvec' is the longitude vector for the 'core' data
 %       -'corelatvec' is the latitude vector for the 'core' data
 %
-% Date created: 26/11/2008  
-% Author:       Elliot Sefton-Nash
-% Institution:  University of Bristol
+%  Copyright 2008-2016  Elliot Sefton-Nash
 %
 % Changelog:
 %

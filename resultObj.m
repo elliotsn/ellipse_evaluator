@@ -1,6 +1,7 @@
 %
 % Class for results.
-% 
+%
+%  Copyright 2016  Elliot Sefton-Nash
 classdef resultObj
    
     properties(GetAccess = 'public', SetAccess = 'public')

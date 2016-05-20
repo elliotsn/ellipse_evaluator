@@ -18,6 +18,7 @@
 % Outputs:
 %   x,y - vectors of polygon coordinates for union shape.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [x, y] = getEllipseExtentAz(ellipse, azvec, re, lat1, lonO)
 
     naz = numel(azvec);

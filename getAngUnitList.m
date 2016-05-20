@@ -1,6 +1,8 @@
 % Returns two cell arrays of strings an an array of reals. Label contains short strings 
 % for use in list boxes. desc contains the description of the unit. mult is
 % a vector of factors to convert each unit into radians.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [label, desc, mult] = getAngUnitList()
     label = {'deg', 'rad', 'mrad'};
     desc = {'Degrees', 'Radians', 'Milliradians'};

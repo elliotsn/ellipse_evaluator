@@ -1,5 +1,7 @@
 % Function to return the statistics for this grid using the pixel center
 % vectors, becasue number of elements == number of pixels.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function str = getGridStatStr(xvc,yvc)
     nx = numel(xvc);
     ny = numel(yvc);

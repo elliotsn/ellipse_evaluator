@@ -18,6 +18,7 @@
 %   x,y - polygon of union shape. Rectangle is the simple way, union of
 %         polygons is the thorough way.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [x, y] = getEllipseExtentOnGrid(ellipse, grid, re, lat1, lonO)
 
     % Figure out how many ellipses are along the edges, if this is above

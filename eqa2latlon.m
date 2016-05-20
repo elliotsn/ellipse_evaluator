@@ -14,8 +14,7 @@
 %   lon  - longitude in degrees.
 %   lat  - latitude in degrees.
 %
-% Author: Elliot Sefton-Nash
-% Date  : 20160122
+%  Copyright 2016  Elliot Sefton-Nash
 function [lon, lat] = eqa2latlon(easting,northing,fe,fn,r,lat1,lonO)
     
     lat1 = deg2rad(lat1);

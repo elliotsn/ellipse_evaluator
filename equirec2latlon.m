@@ -13,7 +13,7 @@
 % Outputs:
 %   lat,lon
 %
-% Author: Elliot Sefton-Nash    Date: 20160209
+%  Copyright 2016  Elliot Sefton-Nash
 %
 function [lat, lon] = equirec2latlon(x, y, r, lat1, lonO)
     lat = rad2deg(y/r);

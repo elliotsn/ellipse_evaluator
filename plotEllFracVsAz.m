@@ -3,6 +3,7 @@
 % of azimuth, on the axes hAx. layers is a cell array of layer objects.
 % result is a single result object calculated in azimuth evaluation mode.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [hAx, hTitle, hXLab, hYLab, hLeg] = ...
     plotEllFracVsAz(hAx, layers, result)
 

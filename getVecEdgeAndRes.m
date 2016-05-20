@@ -3,6 +3,7 @@
 % of the vector. Allows for 1x1 vectors, but unable to set meaningful res
 % or edges, returns NaN.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [edges, res] = getVecEdgeAndRes(centers)
     flag = true;
     if isempty(centers) || numel(centers) == 1

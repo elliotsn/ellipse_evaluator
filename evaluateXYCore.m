@@ -45,8 +45,7 @@
 %                          AND are within the ellipse. This is a sum of
 %                          ellLayerTrueFrac down the layer dimension.
 %
-% Author : Elliot Sefton-Nash
-% Date   : 20151209
+%  Copyright 2016  Elliot Sefton-Nash
 %
 function result = evaluateXYCore(ellipse, grid, layers, wb)
 

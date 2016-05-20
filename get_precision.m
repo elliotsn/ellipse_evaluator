@@ -1,5 +1,7 @@
 % Function to return the correct precision string for use in fread()
 % according to what is read in the PDS label.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [precision, pixel_bytes] = get_precision(pixel_type)
 
     % Decide on core_item_type, which in ISIS 3 is stored in

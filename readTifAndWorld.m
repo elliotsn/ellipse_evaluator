@@ -13,7 +13,7 @@
 %   R            - 3x2 raster spatial reference matrix.
 %
 %
-%   Elliot Sefton-Nash 12/11/2015
+%  Copyright 2015-2016  Elliot Sefton-Nash
 %
 function [im, x, y, R] = readTifAndWorld(fpath, fpathworld)
     % Test

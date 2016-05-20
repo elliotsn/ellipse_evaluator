@@ -2,6 +2,8 @@
 % a string.
 % azUnitsInd is the index in the array returned by getAngUnitList(),
 % defining the angular units.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [azStr, azNum]= validAz(azStr,azUnitsInd)
     % If not valid number set empty string.
     v = validNumeric(azStr);

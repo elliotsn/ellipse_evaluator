@@ -3,6 +3,7 @@
 % Layer panel. rasterLayers is returned either as an empty array or a cell
 % array of rasterLayer objects corresponding to the loaded raster layers.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function rasterLayers = layerPBAdd()
 
     % Open the file selection dialogue, allowing only these files to be

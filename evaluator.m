@@ -1,31 +1,33 @@
 function varargout = evaluator(varargin)
-    % EVALUATOR MATLAB code for evaluator.fig
-    %      EVALUATOR, by itself, creates a new EVALUATOR or raises the existing
-    %      singleton*.
-    %
-    %      H = EVALUATOR returns the handle to a new EVALUATOR or the handle to
-    %      the existing singleton*.
-    %
-    %      EVALUATOR('CALLBACK',hObject,eventData,handles,...) calls the local
-    %      function named CALLBACK in EVALUATOR.M with the given input arguments.
-    %
-    %      EVALUATOR('Property','Value',...) creates a new EVALUATOR or raises the
-    %      existing singleton*.  Starting from the left, property value pairs are
-    %      applied to the GUI before evaluator_OpeningFcn gets called.  An
-    %      unrecognized property name or invalid value makes property application
-    %      stop.  All inputs are passed to evaluator_OpeningFcn via varargin.
-    %
-    %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-    %      instance to run (singleton)".
-    %
-    % See also: GUIDE, GUIDATA, GUIHANDLES
+% EVALUATOR MATLAB code for evaluator.fig
+%      EVALUATOR, by itself, creates a new EVALUATOR or raises the existing
+%      singleton*.
+%
+%      H = EVALUATOR returns the handle to a new EVALUATOR or the handle to
+%      the existing singleton*.
+%
+%      EVALUATOR('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in EVALUATOR.M with the given input arguments.
+%
+%      EVALUATOR('Property','Value',...) creates a new EVALUATOR or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before evaluator_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to evaluator_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
 
-    % Generally this code contains functions that are directly linked to
-    % the functionality of UI elements, such as Callbacks.
-    % Where possible logic and program functionality is deferred to 
-    % functions in external source files.
-    
-    % Begin initialization code - DO NOT EDIT
+% Generally this code contains functions that are directly linked to
+% the functionality of UI elements, such as Callbacks.
+% Where possible logic and program functionality is deferred to 
+% functions in external source files.
+
+%  Copyright 2016  Elliot Sefton-Nash
+
+    % Initialization
     gui_Singleton = 1;
     gui_State = struct('gui_Name',       mfilename, ...
                        'gui_Singleton',  gui_Singleton, ...

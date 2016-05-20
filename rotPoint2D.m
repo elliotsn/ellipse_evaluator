@@ -11,8 +11,7 @@
 % Outputs:
 %   x, y - vectors of rotated output points
 %   
-% Author : Elliot Sefton-Nash (e.sefton-nash@uclmail.net)
-% Date   : 20151125
+%  Copyright 2015-2016  Elliot Sefton-Nash
 %
 function [xout,yout] = rotPoint2D(x, y, xo, yo, ang)
 

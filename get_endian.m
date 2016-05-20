@@ -1,5 +1,7 @@
 % Function to return the correct byte-ordering string for use in fopen()
 % according to what is read in the PDS label.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [endian] = get_endian(data_type)
 
     % Decide on core_item_type and byte-ordering.

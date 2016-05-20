@@ -2,6 +2,7 @@
 % Function to build a bounding rectangle (CW polygon) with 2 vectors
 % containg a point cloud.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [x, y] = boundingRect(xv, yv)
     xlims = [min(xv(:)) max(xv(:))];
     ylims = [min(yv(:)) max(yv(:))];

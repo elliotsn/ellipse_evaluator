@@ -47,8 +47,7 @@
 %                          AND are within the ellipse. This is a sum of
 %                          ellLayerTrueFrac down the layer dimension.
 %
-% Author : Elliot Sefton-Nash
-% Date   : 20160502
+%  Copyright 2016  Elliot Sefton-Nash
 %
 function result = evaluateAzCore(ellipse, azvec, layers, wb)
 
@@ -213,6 +212,16 @@ function result = evaluateAzCore(ellipse, azvec, layers, wb)
                               ell.x, ell.y);
                 end
 
+                %DEBUG
+                subLon = layers{il}.lonvec(min(layers{il}.xlimsIndSubf):max(layers{il}.xlimsIndSubf));
+                subLat = layers{il}.latvec(min(layers{il}.ylimsIndSubf):max(layers{il}.ylimsIndSubf));
+                subf = layers{il}.im([layers{il}.ylimsIndSubf(1):layers{il}.ylimsIndSubf(2)],[layers{il}.xlimsIndSubf(1):layers{il}.xlimsIndSubf(2)]);
+                alphamap = zeros(size(subf));
+                alphamap(subf < -2000) = 1;
+                figure
+                subplot(1,2,1); imagesc(subLon,subLat,subf,'AlphaData',alphamap); axis xy equal tight
+                subplot(1,2,2); imagesc(subLon,subLat,subMask); axis xy equal tight
+                
                 % Calculate the total fractional area of the ellipse
                 % that is true in subMask.
                 ellLayerTrueFrac(il, iaz) = ...

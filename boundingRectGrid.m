@@ -3,6 +3,7 @@
 % which are used to build a grid. Points on edges are
 % required even if edges are straight.
 %
+%  Copyright 2016  Elliot Sefton-Nash
 function [x, y] = boundingRectGrid(xv, yv)
    
     nx = numel(xv);

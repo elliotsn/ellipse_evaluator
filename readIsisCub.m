@@ -1,7 +1,6 @@
-function [label, core, isis_version] = read_isis_cub(cubfile)
+function [label, core, isis_version] = readIsisCub(cubfile)
 %
-% Author: Elliot Sefton-Nash
-% Institution: University of Bristol
+%  Copyright 2007-2016  Elliot Sefton-Nash
 %
 %   Changelog:
 %

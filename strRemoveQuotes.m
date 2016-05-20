@@ -1,7 +1,8 @@
 %
 % Function to remove single or double quotes from a string.
 %
-function outStr = str_remove_quotes(inStr)    
+%  Copyright 2016  Elliot Sefton-Nash
+function outStr = strRemoveQuotes(inStr)    
     
     % If is s cell array of strings, loop over each
     if iscell(inStr)

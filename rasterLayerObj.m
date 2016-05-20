@@ -1,6 +1,7 @@
 %
 % Class for a raster layer object. Pixel registered.
-% 
+%
+%  Copyright 2016  Elliot Sefton-Nash
 classdef rasterLayerObj
    
     properties(GetAccess = 'public', SetAccess = 'public')

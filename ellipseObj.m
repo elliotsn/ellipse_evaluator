@@ -1,6 +1,7 @@
 %
 % Class for an ellipse.
 % 
+%  Copyright 2016  Elliot Sefton-Nash
 classdef ellipseObj
    
     properties(GetAccess = 'public', SetAccess = 'public')

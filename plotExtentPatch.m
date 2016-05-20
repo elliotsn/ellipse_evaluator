@@ -1,4 +1,6 @@
 % Plots a patch on some axes, gray, 70% transparent with a dotted border.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function plotExtentPatch(hAx,x,y)
     hold(hAx, 'on');
     patch(x, y, 'k', 'EdgeColor', 'k',...

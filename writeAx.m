@@ -2,6 +2,8 @@
 % All the handles in the structure of object handles are copied to the new
 % figure. Acceptable fields are: hAx and hLeg.
 % Full path to the file and the file extension are passed.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function success = writeAx(h, fpath, ext)
     % There is no direct way to print a specific axes from a 
     % figure window, because the print routine is associated 

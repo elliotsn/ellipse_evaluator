@@ -1,6 +1,6 @@
 function label = readPdsLbl(lblfile)
 %
-% Elliot Sefton-Nash, University of Bristol, 22/4/2008
+%  Copyright 2008-2016  Elliot Sefton-Nash
 %
 % A function to read a PDS label file (*.LBL).
 %  

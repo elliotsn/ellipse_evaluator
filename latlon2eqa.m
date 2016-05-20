@@ -5,7 +5,8 @@
 %   r    - radius of planetary body (assumed to be sphere)
 %   lat1 - latitude of first standard parallel in degrees
 %   lonO - longitude of origin in degrees
-%   
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [easting, northing] = latlon2eqa(lat,lon,r,lat1,lonO)
     
     lat = deg2rad(lat);

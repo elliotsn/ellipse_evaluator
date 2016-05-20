@@ -6,7 +6,7 @@
 % radiusE     - equatorial radius
 % radiusP     - polar radius
 %
-% Elliot Sefton-Nash 03/02/2016
+%  Copyright 2016  Elliot Sefton-Nash
 function ocentricLat = ographic2ocentricLat(ographicLat,radiusE,radiusP)
     % Doesn't correct for phase, just return original if outside bounds.
     if abs(ographicLat) < 90

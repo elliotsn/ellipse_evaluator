@@ -2,6 +2,7 @@ function [values] = readWorldFile(path)
 %
 %  Function to read the 6 numeric values from a world file and return them
 %
+%  Copyright 2016  Elliot Sefton-Nash
 fid = fopen(path,'rt');
 values = zeros(6, 1);
 

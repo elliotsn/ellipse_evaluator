@@ -2,8 +2,7 @@
 % Function to return a string that represents the number of bytes in B in a
 % tidy way.
 %
-% Author: Elliot Sefton-Nash
-% Date  : 20151208
+%  Copyright 2016  Elliot Sefton-Nash
 function s = getByteStr(B)
     n = floor(log2(B)/10);
     if n < 0

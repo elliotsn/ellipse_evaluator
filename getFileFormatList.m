@@ -1,4 +1,6 @@
 % Function to return the list of supported file formats and thier extensions.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [desc, ext, aux] = getFileFormatList(evalMode)
     
     evalModes = getEvaluateModes();

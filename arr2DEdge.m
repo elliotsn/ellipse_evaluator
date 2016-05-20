@@ -7,6 +7,8 @@
 % an array.
 % Returns the input array if it is 2D but one of the dimensions is of size
 % 1.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function edge = arr2DEdge(arr)
     if ~isempty(arr) && ismatrix(arr)
         % Remove singletons

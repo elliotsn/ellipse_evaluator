@@ -1,5 +1,7 @@
 % Returns two cell arrays of strings. label contains short strings for use
 % in list boxes. desc contains the description of the unit.
+%
+%  Copyright 2016  Elliot Sefton-Nash
 function [label, desc, mult] = getLengthUnitList()
     label = {'m', 'km'};
     desc = {'metres', 'kilometres'};
