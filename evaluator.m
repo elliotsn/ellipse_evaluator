@@ -483,101 +483,109 @@ end
 % end
 
 % Callback for when ellipse Preview button is pressed.
-function layerEllipsePreviewPB_Callback(hObject, eventdata, handles)
+function ellipsePreviewPB_Callback(hObject, eventdata, handles)
 	data = guidata(gcbf);
-
-    titleStr = '';
+    
+    plotted = false;
     
     % If layer footprint checkbox is checked & if there are any layers
     % loaded, then plot the footprints of all the raster layers.
     if data.ellipseRasterFootprintCB.Value == 1 && data.nlayers > 0
         % Clear the plot axes.
         cla(data.plot.hAx);
-        titleStr = 'Layer Footprints';
         setStatus('Plotting layer footprints...');
         plotLayerFootprints(data.layers, data.plot.hAx);
         setStatus('Ready.');
+        plotted = true;
     end
     
-    % Plot ellipse last == on top.
-    % If there are values in the edit boxes. Already validated.
-    if ~isempty(data.ellipseXAEdit.Value) && ...
-       ~isempty(data.ellipseYAEdit.Value)        
-        
-        % Can still plot without having entered a value for azimuth, assume
-        % user wants no rotation.
-        az = 0;
-        if ~isempty(data.ellipseAzEdit.Value)
-            % Turn ellipse azimuth into radians for plotting.
-            [~, ~, mult] = getAngUnitList();
-            az = data.ellipseAzEdit.Value * mult(data.ellipseAzEditUnitsListBox.Value);
+    % If there are no polygons, then there must be an ellipse
+    if isempty(data.poly)
+  
+        % Plot ellipse last == on top.
+        % If there are values in the edit boxes. Already validated.
+        if ~isempty(data.ellipseXAEdit.Value) && ...
+           ~isempty(data.ellipseYAEdit.Value)        
+
+            % Can still plot without having entered a value for azimuth, assume
+            % user wants no rotation.
+            az = 0;
+            if ~isempty(data.ellipseAzEdit.Value)
+                % Turn ellipse azimuth into radians for plotting.
+                [~, ~, mult] = getAngUnitList();
+                az = data.ellipseAzEdit.Value * mult(data.ellipseAzEditUnitsListBox.Value);
+            end
+
+            % Turn ellipse dimensions into metres for plotting.
+            [~, ~, mult] = getLengthUnitList;
+            xa = data.ellipseXAEdit.Value * mult(data.ellipseXAEditUnitsListBox.Value);
+            ya = data.ellipseYAEdit.Value * mult(data.ellipseYAEditUnitsListBox.Value);
+
+            % 1 degree angular resolution of the ellipse.
+            angRes = pi/180;
+
+            % Set ellipse centre, in metres.
+            if isempty(data.ellipseXEdit.Value)
+                data.ellipseXEdit.Value = 0;
+            else
+                % Convert longitude to x-coord.
+                clon = data.ellipseXEdit.Value;
+            end
+            if isempty(data.ellipseYEdit.Value)
+                data.ellipseYEdit.Value = 0;
+            else
+                % Convert to latitude to y-coord.
+                clat = data.ellipseYEdit.Value;
+            end
+
+            % Values in edit boxes are in latlon, convert to equal-area map coords for
+            % drawing ellipse.
+            [xc, yc] = latlon2eqa( clat, clon, data.re , data.proj.lat1, data.proj.lonO );
+
+            % Make an ellipse object and put it into data.
+            data.ellipse{1} = ellipseObj(xa, ya, az, angRes, xc, yc);
+
+            % Make the ellipses lat,lon coordinates
+            data.ellipse{1} = data.ellipse{1}.getLatLonFromEqaXY(data.re, data.proj.lat1, data.proj.lonO);
+
+            % If we're plotting the ellipse only, i.e. if layers havn't been drawn here, 
+            % then clear the axes, because a previous plot might persist. Can
+            % tell by setting of titleStr.
+            if ~plotted
+                cla(data.plot.hAx);
+            end
+
+            % Convention is that hold is normally turned off and re-turned on every time 
+            % overlay plotting is required. hold may have been off either because no rasters 
+            % were drawn, or because it was set back to off in the function plotRasterLayers.
+            hold(data.plot.hAx, 'on');
+            plotPoly(data.ellipse{1}.lon, data.ellipse{1}.lat, data.plot.hAx);
+            hold(data.plot.hAx, 'off');
+
+            % Wrap the axes to its children
+            axis(data.plot.hAx, 'tight');
+
+            % Put data back.
+            guidata(gcbf, data);
         end
+    
+    else
         
-        % Turn ellipse dimensions into metres for plotting.
-        [~, ~, mult] = getLengthUnitList;
-        xa = data.ellipseXAEdit.Value * mult(data.ellipseXAEditUnitsListBox.Value);
-        ya = data.ellipseYAEdit.Value * mult(data.ellipseYAEditUnitsListBox.Value);
-        
-        % 1 degree angular resolution of the ellipse.
-        angRes = pi/180;
-        
-        % Set ellipse centre, in metres.
-        if isempty(data.ellipseXEdit.Value)
-            data.ellipseXEdit.Value = 0;
-        else
-            % Convert longitude to x-coord.
-            clon = data.ellipseXEdit.Value;
-        end
-        if isempty(data.ellipseYEdit.Value)
-            data.ellipseYEdit.Value = 0;
-        else
-            % Convert to latitude to y-coord.
-            clat = data.ellipseYEdit.Value;
-        end
-        
-        % Values in edit boxes are in latlon, convert to equal-area map coords for
-        % drawing ellipse.
-        [xc, yc] = latlon2eqa( clat, clon, data.re , data.proj.lat1, data.proj.lonO );
-        
-        % Make an ellipse object and put it into data.
-        data.ellipse{1} = ellipseObj(xa, ya, az, angRes, xc, yc);
-        
-        % Make the ellipses lat,lon coordinates
-        data.ellipse{1} = data.ellipse{1}.getLatLonFromEqaXY(data.re, data.proj.lat1, data.proj.lonO);
-        
-        % If we're plotting the ellipse only, i.e. if layers havn't been drawn here, 
-        % then clear the axes, because a previous plot might persist. Can
-        % tell by setting of titleStr.
-        if isempty(titleStr)
+        % Clear the axes, because a previous plot might persist.
+        if ~plotted
             cla(data.plot.hAx);
         end
         
-        % Convention is that hold is normally turned off and re-turned on every time 
-        % overlay plotting is required. hold may have been off either because no rasters 
-        % were drawn, or because it was set back to off in the function plotRasterLayers.
+        % There are polygons, gotta plot them all.
         hold(data.plot.hAx, 'on');
-        plotEllipse(data.ellipse{1}, data.plot.hAx);
-        title(data.plot.hAx, 'Ellipse');
-        hold(data.plot.hAx, 'off');
-        
-        % Wrap the axes to its children
-        axis(data.plot.hAx, 'tight');
-        
-        % Update title, allowing for it already to be populated.
-        piece = '';
-        if ~isempty(titleStr)
-            piece = ' & ';
+        for i = 1:numel(data.poly)
+            plotPoly(data.poly{i}.x, data.poly{i}.y, data.plot.hAx);    
         end
-        titleStr = [titleStr, piece, 'Ellipse'];
-        
+        hold(data.plot.hAx, 'off');
         % Put data back.
         guidata(gcbf, data);
     end
     
-    % Update title if anything has been plotted.
-    if ~isempty(titleStr)
-        title(data.plot.hAx, titleStr);
-    end
     setStatus('Ready.');
 end
 
@@ -989,7 +997,7 @@ function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
         
     else
         % TODO
-        data.plot.hAx = plotEllFracGrid
+        % data.plot.hAx = plotEllFracGrid;
         
         % Assumption is that the results object contains results over a
         % spatial grid object.
@@ -1013,62 +1021,86 @@ function evaluateResultsPreviewPB_Callback(hObject, eventdata, data)
 end
 
 function evaluateModeListBox_Callback(hObject, eventdata, data)
-    guidata(gcbf, setEvaluateModeState(guidata(gcbf)));
+    allOff = false;
+    guidata(gcbf, setEvaluateModeState(guidata(gcbf), allOff));
 end
 
-function data = setEvaluateModeState(data)
-
-    % Set the mode as an integer in a top-level variable.
-    data.mode = data.evaluateModeListBox.Value;
-
-    evalModes = getEvaluateModes();
+% Function to set the enablement state of ui controls for ellipse
+% placement. Optionally, if the boolean, allOff is true, then all controls
+% are disabled. This is used when loading ellipses from shapefiles rather
+% than defining them.
+function data = setEvaluateModeState(data, allOff)
     
     % Find the value of the azimuth list box and set it.
     stateOn = 'on';
     stateOff = 'off';
-    switch evalModes{data.evaluateModeListBox.Value}
-        case 'azimuth'
-            % Make azimuth evaluator controls active, but disable lat-lon.
-            
-            data.evaluateAzMinEdit.Enable = stateOn;
-            data.evaluateAzStepEdit.Enable = stateOn;
-            data.evaluateAzMaxEdit.Enable = stateOn;
-            data.evaluateAzEditUnitsListBox.Enable = stateOn;
-            
-            data.evaluateXMinEdit.Enable = stateOff;
-            data.evaluateXStepEdit.Enable = stateOff;
-            data.evaluateXMaxEdit.Enable = stateOff;
-            data.evaluateYMinEdit.Enable = stateOff;
-            data.evaluateYStepEdit.Enable = stateOff;
-            data.evaluateYMaxEdit.Enable = stateOff;
-            data.evaluateSetBoundsPB.Enable = stateOff;
-            data.evaluateSetBoundsPopup.Enable = stateOff;
-            
-        case 'lat-lon'
-            % Make lat-lon evaluator controls active, but disable azimuth.
-            data.evaluateAzMinEdit.Enable = stateOff;
-            data.evaluateAzStepEdit.Enable = stateOff;
-            data.evaluateAzMaxEdit.Enable = stateOff;
-            data.evaluateAzEditUnitsListBox.Enable = stateOff;
-            
-            data.evaluateXMinEdit.Enable = stateOn;
-            data.evaluateXStepEdit.Enable = stateOn;
-            data.evaluateXMaxEdit.Enable = stateOn;
-            data.evaluateYMinEdit.Enable = stateOn;
-            data.evaluateYStepEdit.Enable = stateOn;
-            data.evaluateYMaxEdit.Enable = stateOn;
-            
-            % Only enable if there are layers loaded.
-            if data.nlayers > 0
-                data.evaluateSetBoundsPB.Enable = stateOn;
-                data.evaluateSetBoundsPopup.Enable = stateOn;
-            end
+    
+    % Option to disable all controls relating to ellipse definition.
+    if allOff
+        data.evaluateModeListBox.Enable = stateOff;
+        
+        data.evaluateAzMinEdit.Enable = stateOff;
+        data.evaluateAzStepEdit.Enable = stateOff;
+        data.evaluateAzMaxEdit.Enable = stateOff;
+        data.evaluateAzEditUnitsListBox.Enable = stateOff;
+
+        data.evaluateXMinEdit.Enable = stateOff;
+        data.evaluateXStepEdit.Enable = stateOff;
+        data.evaluateXMaxEdit.Enable = stateOff;
+        data.evaluateYMinEdit.Enable = stateOff;
+        data.evaluateYStepEdit.Enable = stateOff;
+        data.evaluateYMaxEdit.Enable = stateOff;
+        data.evaluateSetBoundsPB.Enable = stateOff;
+        data.evaluateSetBoundsPopup.Enable = stateOff;
+    else
+        
+        % Set the mode as an integer in a top-level variable.
+        data.mode = data.evaluateModeListBox.Value;
+        evalModes = getEvaluateModes();
+    
+        switch evalModes{data.evaluateModeListBox.Value}
+            case 'azimuth'
+                % Make azimuth evaluator controls active, but disable lat-lon.
+
+                data.evaluateAzMinEdit.Enable = stateOn;
+                data.evaluateAzStepEdit.Enable = stateOn;
+                data.evaluateAzMaxEdit.Enable = stateOn;
+                data.evaluateAzEditUnitsListBox.Enable = stateOn;
+
+                data.evaluateXMinEdit.Enable = stateOff;
+                data.evaluateXStepEdit.Enable = stateOff;
+                data.evaluateXMaxEdit.Enable = stateOff;
+                data.evaluateYMinEdit.Enable = stateOff;
+                data.evaluateYStepEdit.Enable = stateOff;
+                data.evaluateYMaxEdit.Enable = stateOff;
+                data.evaluateSetBoundsPB.Enable = stateOff;
+                data.evaluateSetBoundsPopup.Enable = stateOff;
+
+            case 'lat-lon'
+                % Make lat-lon evaluator controls active, but disable azimuth.
+                data.evaluateAzMinEdit.Enable = stateOff;
+                data.evaluateAzStepEdit.Enable = stateOff;
+                data.evaluateAzMaxEdit.Enable = stateOff;
+                data.evaluateAzEditUnitsListBox.Enable = stateOff;
+
+                data.evaluateXMinEdit.Enable = stateOn;
+                data.evaluateXStepEdit.Enable = stateOn;
+                data.evaluateXMaxEdit.Enable = stateOn;
+                data.evaluateYMinEdit.Enable = stateOn;
+                data.evaluateYStepEdit.Enable = stateOn;
+                data.evaluateYMaxEdit.Enable = stateOn;
+
+                % Only enable if there are layers loaded.
+                if data.nlayers > 0
+                    data.evaluateSetBoundsPB.Enable = stateOn;
+                    data.evaluateSetBoundsPopup.Enable = stateOn;
+                end
+        end
+        % Set the content of the write file formats list box.
+        [desc, ~, ~] = getFileFormatWriteList(data.mode);
+        data.evaluateResultsFormatListBox.String = desc;
     end
     
-    % Set the content of the write file formats list box.
-    [desc, ~, ~] = getFileFormatWriteList(data.mode);
-    data.evaluateResultsFormatListBox.String = desc;
- 
 end
 
 % Save plot
@@ -1105,6 +1137,70 @@ function plotSavePB_Callback(hObject, eventdata, data)
     end
 end
 
+
+% Load a polygon from a shapefile
+function ellipseLoadPB_Callback(hObject, eventdata, data)
+    
+    data = guidata(gcbf);    
+    
+    % Makes load UI and populates cell array of poly objects if
+    % shapefile is valid.
+    data.poly = shapeLoad();
+    
+    if isempty(data.poly)
+        setStatus('Unable to load shapefile.');
+    else
+        % There are polygons now defined, disable the user 
+        % controls for manual ellipse definition.
+        data = setEllipseControlsState(data, 'off');
+        
+        setStatus('Loaded polygon(s) in shapefile.');
+    end
+    guidata(gcbf, data);
+end
+
+% Function to set the state of the controls involved in defining the
+% ellipse size and placement, on both the ellipse tab AND the evaluate tab.
+function data = setEllipseControlsState(data, state)    
+    
+    % Ellipse tab, definition panel
+    data.ellipseXAEdit.Enable = state;
+    data.ellipseXAEditUnitsListBox.Enable = state;
+    data.ellipseYAEdit.Enable = state;
+    data.ellipseYAEditUnitsListBox.Enable = state;
+    data.ellipseAzEdit.Enable = state;
+    data.ellipseAzEditUnitsListBox.Enable = state;
+    data.ellipseXEdit.Enable = state;
+    data.ellipseYEdit.Enable = state;
+    
+    % Evaluate tab, placement panel
+    allOff = true;
+    data = setEvaluateModeState(data, allOff);
+    
+    % If we are re-enabling the Evaluate tab, we must reset the ui elements
+    % according to whether the ellipse is evaluated over azimuth or
+    % lat-lon.
+    if strcmpi(state,'on')
+        allOff = false;
+        % Re-enable the evaluate mode list box. This is not set in
+        % setEvaluateModeState.
+        data.evaluateModeListBox.Enable = 'on';
+        data = setEvaluateModeState(data, allOff);
+    end
+    
+end
+
+% Call back for Clear Loaded Pushbutton on ellipse define tab.
+function ellipseClearLoadedPB_Callback(hObject, eventdata, data)
+    data = guidata(gcbf);
+    % Re-enable ellipse defintion controls
+    data = setEllipseControlsState(data, 'on');
+    % Remove shapefiles from data
+    data.poly = {};
+    % Clear the axes in case there is anything plotted.
+    cla(data.plot.hAx);
+    guidata(gcbf, data)
+end
 
 % --- Executes during object creation, after setting all properties.
 function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
@@ -1202,82 +1298,93 @@ function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
         'Callback',@layerCBInvert_Callback);
 
     % --- ELLIPSE ---
+    
+    % ELLIPSE DEFINE PANEL
+    data.ellipseDefinePanel = uipanel('Parent', data.tabEllipse, 'Title', 'DEFINE',...
+        'FontSize', 11, 'Position', [.04 .5 .92 .48]);
+    
+    
     % Separate cell array of ellipse objects, so we can address ellipse
     % properties quickly without cumbersomely querying UI elements.
     data.ellipse = {};
     
-    % Common position parameters for ellipse controls.
+    % Similarly for polygon objects
+    data.poly = {};
+    
+    % Common position parameters for ellipse controls. Units are normalized
+    % fraction of ellipseDefinePanel, which is 0.48 of main window height.
     xl = .05; xm = .3; xr = .7;
     labelw = .24; editw = .38; listboxw = .25;   
-    labelh = .1; edith = .04; listboxh = .04;
-    ytop = .9;
-    ySpacing = .095;
+    labelh = .12; edith = .08; listboxh = .1;
+    ytop = .85;
+    ySpacing = .19;
     labelYOffset = -.065;
+    listBoxOffset = -.03;
     rowNumber = 0;
     
     % Ellipse x-axis size
     [lengthUnitsLabel, ~, ~] = getLengthUnitList();
     % y-position of this row on panel
     ypos = ytop - (rowNumber*ySpacing);
-    data.ellipseXALabel = uicontrol(data.tabEllipse,'Style','text',...
+    data.ellipseXALabel = uicontrol(data.ellipseDefinePanel,'Style','text',...
                 'Visible', 'on','String','x axis',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.ellipseXAEdit = uicontrol(data.tabEllipse,'Style','edit',...
+    data.ellipseXAEdit = uicontrol(data.ellipseDefinePanel,'Style','edit',...
                 'Visible', 'on', 'String','',...
                 'Enable',stateOn,...
                 'Units','normalized','Position',[xm ypos editw edith],...
                 'Value',[],...
                 'Callback', @ellipseXAEdit_Callback);
-	data.ellipseXAEditUnitsListBox = uicontrol(data.tabEllipse,'Style','popupmenu',...
+	data.ellipseXAEditUnitsListBox = uicontrol(data.ellipseDefinePanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', lengthUnitsLabel,...
                 'Value',2,...
                 'Enable',stateOn,...
-                'Units','normalized','Position',[xr ypos listboxw listboxh]);
+                'Units','normalized','Position',[xr ypos+listBoxOffset listboxw listboxh]);
 	
 	% Ellipse y-axis size. This is measured in on-target, projected units.
     rowNumber = rowNumber + 1;
     ypos = ytop - (rowNumber*ySpacing);
-    data.ellipseYALabel = uicontrol(data.tabEllipse,'Style','text',...
+    data.ellipseYALabel = uicontrol(data.ellipseDefinePanel,'Style','text',...
                 'Visible', 'on','String','y axis',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.ellipseYAEdit = uicontrol(data.tabEllipse,'Style','edit',...
+    data.ellipseYAEdit = uicontrol(data.ellipseDefinePanel,'Style','edit',...
                 'Visible', 'on', 'String','',...
                 'Enable',stateOn,...
                 'Units','normalized','Position',[xm ypos editw edith],...
                 'Value',[],...
                 'Callback', @ellipseYAEdit_Callback);
-	data.ellipseYAEditUnitsListBox = uicontrol(data.tabEllipse,'Style','popupmenu',...
+	data.ellipseYAEditUnitsListBox = uicontrol(data.ellipseDefinePanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', lengthUnitsLabel,...
                 'Value',2,...
                 'Enable',stateOn,...
-                'Units','normalized','Position',[xr ypos listboxw listboxh]);
+                'Units','normalized','Position',[xr ypos+listBoxOffset listboxw listboxh]);
     
 	% Azimuth of ellipse.
 	[angUnitsLabel, ~, ~] = getAngUnitList();
     rowNumber = rowNumber + 1;
 	ypos = ytop - (rowNumber*ySpacing);
-    data.ellipseAzLabel = uicontrol(data.tabEllipse,'Style','text',...
+    data.ellipseAzLabel = uicontrol(data.ellipseDefinePanel,'Style','text',...
                 'Visible', 'on', 'String', 'Rotation (deg)',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.ellipseAzEdit = uicontrol(data.tabEllipse,'Style','edit',...
+    data.ellipseAzEdit = uicontrol(data.ellipseDefinePanel,'Style','edit',...
                 'Visible', 'on', 'String','',...
                 'Enable',stateOn,...
                 'Units','normalized','Position',[xm ypos editw edith],...
                 'Value',[],...
                 'Callback', @ellipseAzEdit_Callback);
-    data.ellipseAzEditUnitsListBox = uicontrol(data.tabEllipse,'Style','popupmenu',...
+    data.ellipseAzEditUnitsListBox = uicontrol(data.ellipseDefinePanel,'Style','popupmenu',...
                 'Visible', 'on', 'String', angUnitsLabel,...
                 'Value',1,...
                 'Enable',stateOn,...
-                'Units','normalized','Position',[xr ypos listboxw listboxh]);
+                'Units','normalized','Position',[xr ypos+listBoxOffset listboxw listboxh]);
 
     % Ellipse longitude position (0-360). Default is 180.
     rowNumber = rowNumber + 1;
     ypos = ytop - (rowNumber*ySpacing);
-    data.ellipseXLabel = uicontrol(data.tabEllipse,'Style','text',...
+    data.ellipseXLabel = uicontrol(data.ellipseDefinePanel,'Style','text',...
                 'Visible', 'on','String','Longitude',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.ellipseXEdit = uicontrol(data.tabEllipse,'Style','edit',...
+    data.ellipseXEdit = uicontrol(data.ellipseDefinePanel,'Style','edit',...
                 'Visible', 'on', 'String','180',...
                 'Enable',stateOn,...
                 'Units','normalized','Position',[xm ypos editw edith],...
@@ -1287,33 +1394,64 @@ function evaluatorCreate(hObject, eventdata, data) %#ok<DEFNU>
 	% Ellipse latitude position (-90 to 90). Default is equator.
     rowNumber = rowNumber + 1;
     ypos = ytop - (rowNumber*ySpacing);
-    data.ellipseYLabel = uicontrol(data.tabEllipse,'Style','text',...
+    data.ellipseYLabel = uicontrol(data.ellipseDefinePanel,'Style','text',...
                 'Visible', 'on','String','Latitude',...
                 'Units','normalized','Position',[xl ypos+labelYOffset labelw labelh]);
-    data.ellipseYEdit = uicontrol(data.tabEllipse,'Style','edit',...
+    data.ellipseYEdit = uicontrol(data.ellipseDefinePanel,'Style','edit',...
                 'Visible', 'on', 'String','0',...
                 'Enable',stateOn,...
                 'Units','normalized','Position',[xm ypos editw edith],...
                 'Value',0,...
                 'Callback', @ellipseYEdit_Callback);
 
-	% Ellipse preview pushbutton
-    data.ellipsePreviewPB = uicontrol(data.tabEllipse,'Style','pushbutton',...
-                    'Units','normalized','Position',[.58 .32 .25 .055],...
+	
+    % SHAPEFILE LOAD PANEL
+    data.ellipseLoadPanel = uipanel('Parent', data.tabEllipse, 'Title', 'LOAD',...
+        'FontSize', 11, 'Position', [.04 .22 .92 .26]);
+    
+    s = '';
+    data.ellipseLoadEdit = uicontrol(data.ellipseLoadPanel,'Style','text',...
+        'Visible', 'on','String',s,...
+        'Units','normalized','Position',[.5 .4 .4 .5]);
+    
+    
+	% Load shapefile button
+	data.ellipseLoadPB = uicontrol(data.ellipseLoadPanel,'Style','pushbutton',...
+        'Units','normalized','Position',[.1 .5 .4 .25],...
+        'Visible', 'on', 'String', 'Load from shapefile',...
+        'Enable',stateOn,...
+        'Callback',@ellipseLoadPB_Callback);
+    
+    % Clear loaded shapefile button
+    data.ellipseClearLoadedPB = uicontrol(data.ellipseLoadPanel,'Style','pushbutton',...
+        'Units','normalized','Position',[.1 .2 .4 .25],...
+        'Visible', 'on', 'String', 'Clear loaded',...
+        'Enable',stateOn,...
+        'Callback',@ellipseClearLoadedPB_Callback);
+    
+
+    % PREVIEW PANEL
+    data.ellipsePreviewPanel = uipanel('Parent', data.tabEllipse, 'Title', 'PREVIEW',...
+        'FontSize', 11, 'Position', [.04 .03 .92 .17]);
+    
+    % Ellipse preview pushbutton
+    data.ellipsePreviewPB = uicontrol(data.ellipsePreviewPanel,'Style','pushbutton',...
+                    'Units','normalized','Position',[.1 .35 .3 .38],...
                     'Visible', 'on', 'String', 'Preview',...
                     'Enable',stateOn,...
-                    'Callback',@layerEllipsePreviewPB_Callback);
+                    'Callback',@ellipsePreviewPB_Callback);
     
     % Check box to preview with footprints of loaded rasters.
-    data.ellipseRasterFootprintCB = uicontrol(data.tabEllipse,'Style','checkbox',...
-        'Units','normalized','Position',[.1 .32 .4 .055],...
+    data.ellipseRasterFootprintCB = uicontrol(data.ellipsePreviewPanel,'Style','checkbox',...
+        'Units','normalized','Position',[.5 .35 .5 .38],...
         'Visible', 'on', 'String', 'Plot layer footprints',...
         'Enable',stateOff,'Value', 0);
+    
     
     %% --- EVALUATE ---
     
     % Panel to set parameters over which to evaluate
-    data.evaluateParamPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'PARAMETERS',...
+    data.evaluateParamPanel = uipanel('Parent', data.tabEvaluate, 'Title', 'PLACEMENT PARAMETERS',...
         'FontSize', 11, 'Position', [.04 .5 .92 .48]);
     
     % Spatial constraint layout

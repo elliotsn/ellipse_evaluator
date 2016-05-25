@@ -21,28 +21,31 @@ classdef resultObj
         % there is 50% area within the ellipse with no data coverage, 
         % where it is unknown if the layer meets the
         % constraints or not.
-        ellLayerFrac;
+        layerFrac;
 
         % Array of size nlayers x DIMS, i.e. one slice for each 
         % layer. It contains the fraction of the ellipse at each point in
         % parameter space that meets the constraints for each layer.           
-        ellLayerTrueFrac;
+        layerTrueFrac;
 
         % Array the same size as DIMS. E.g. for placement of the ellipse
         % centre at (x,y), ellTrueFrac(x,y) is the fraction of all pixels 
         % in all layers that meet the defined numeric constraints 
         % AND are within the ellipse. This is a sum of
         % ellLayerTrueFrac down the layer dimension.
-        ellTrueFrac;
+        trueFrac;
 
         grid; % Grid object used for this evaluation (grdObj.m). Empty if 
-              % results are evaluated over an azimuth vector.
+              % results are evaluated over an azimuth vector, or an array
+              % of polygons.
         azvec; % Vector of azimuths over which this ellipse is evaluated 
                % (radians). Empty array if results are calculated over a 
-               % grid object.
+               % grid object, or an array of polygons.
         azvecd; % (degrees)
-        ellipse % Ellipse object used for this evaluation (ellipseObj.m).
-        
+        ellipse; % Ellipse object used for this evaluation (ellipseObj.m). 
+                % Empty if results are calculated for polygons from a
+                % loaded shapefile.
+        shp;    % Array of polyObjects
         lfname; % Cell array of layer file names.
         lfpath; % Cell array of file paths.
     end

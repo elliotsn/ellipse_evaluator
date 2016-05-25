@@ -5,20 +5,20 @@
 classdef ellipseObj
    
     properties(GetAccess = 'public', SetAccess = 'public')
-       x;   % Vector of x coordinates of ellipse vertices.
-       y;   % Vector of y coordinates of ellipse vertices.
-       lat; % Vector of latitude coordinates of ellipse vertices.
-       lon; % Vector of longitude coordinates of ellipse vertices.
-       azimuth;  % Rotation of ellipse in CCW direction from +ve y-axis in radians.
-       azimuthd; % Rotation of ellipse in CCW direction from +ve y-axis in degrees.
+       x;   % Vector of x coordinates of vertices.
+       y;   % Vector of y coordinates of vertices.
+       lat; % Vector of latitude coordinates of vertices.
+       lon; % Vector of longitude coordinates of vertices.
+       azimuth;  % Rotation in CCW direction from +ve y-axis in radians.
+       azimuthd; % Rotation in CCW direction from +ve y-axis in degrees.
        majoraxis; % In metres
        minoraxis; % In metres
        semimajoraxis; % In metres
        semiminoraxis; % In metres
        nvertices; % Number of vertices
        eccentricity;
-       xa;  % Original x-axis length passed to create ellipse
-       ya;  % Original y-axis length passed to create ellipse
+       xa;  % Original x-axis length passed to create if the polygon is an ellipse.
+       ya;  % Original y-axis length passed to create if the polygon is an ellipse.
        xc;  % x - Coordinate of centroid
        yc;  % y - Coordinate of centroid
        latc; % latitude of centroid
@@ -55,8 +55,9 @@ classdef ellipseObj
             obj.areaPoly = polyarea(obj.x, obj.y); % Area of the polygon that approximates the ellipse.
         end
         
-        % Function to calculate lat-lon coordinates for the ellipse assuming that the 
-        % xy coordinates that describe the ellipse are equal-area cylindrical coordinates.
+        % Function to calculate lat-lon coordinates for the vertices 
+        % assuming that the xy coordinates that describe the polygon are 
+        % equal-area cylindrical coordinates.
         %
         % Inputs:
         %   lat1 - latitude of first standard parallel
