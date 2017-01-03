@@ -60,13 +60,30 @@ classdef ellipseObj
         % equal-area cylindrical coordinates.
         %
         % Inputs:
+        %     fe - false easting
+        %     fn - false northing
         %   lat1 - latitude of first standard parallel
         %   lonO - longitude of origin
         %      r - radius of spherical body in map-units.
-        function obj = getLatLonFromEqaXY(obj ,r,lat1,lonO)
-            fe=0; fn=0;
+        function obj = getLatLonFromEqaXY(obj ,fe,fn,r,lat1,lonO)
             [obj.lonc, obj.latc] = eqa2latlon(obj.xc,obj.yc,fe,fn,r,lat1,lonO);
             [obj.lon, obj.lat] = eqa2latlon(obj.x,obj.y,fe,fn,r,lat1,lonO);
+        end
+        
+        % Function to calculate lat-lon coordinates for the vertices 
+        % assuming that the xy coordinates that describe the polygon are 
+        % equirectangular coordinates.
+        %
+        % Inputs:
+        %   lat1 - latitude of first standard parallel
+        %   lonO - longitude of origin
+        %      r - radius of spherical body in map-units.
+        %     fe - false easting (+x) of the equirec coordinate, allows 
+        %          offset of ellipse back to origin.
+        %     fn - false northing (+y) of equirec coordinate.
+        function obj = getLatLonFromEquirecXY(obj ,fe,fn,r,lat1,lonO)
+            [obj.lonc, obj.latc] = equirec2latlon(obj.xc,obj.yc,fe,fn,r,lat1,lonO);
+            [obj.lon, obj.lat] = equirec2latlon(obj.x,obj.y,fe,fn,r,lat1,lonO);
         end
         
     end

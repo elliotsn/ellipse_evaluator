@@ -33,7 +33,8 @@ function [x, y] = getEllipseExtentAz(ellipse, azvec, re, lat1, lonO)
         % work we need to know the map-projection parameters for the
         % inverse transform from equal area to lat-lon.
         if ~isempty(lat1) && ~isempty(lonO) && ~isempty(re)
-            ell = ell.getLatLonFromEqaXY(re,lat1,lonO);
+            fe = 0; fn = 0;
+            ell = ell.getLatLonFromEqaXY(fe,fn,re,lat1,lonO);
             elx = ell.lon;
             ely = ell.lat;
         else

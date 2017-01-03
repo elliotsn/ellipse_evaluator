@@ -55,8 +55,7 @@ classdef polyObj
         %   lat1 - latitude of first standard parallel
         %   lonO - longitude of origin
         %      r - radius of spherical body in map-units.
-        function obj = getLatLonFromEqaXY(obj ,r,lat1,lonO)
-            fe=0; fn=0;
+        function obj = getLatLonFromEqaXY(obj ,fe,fn,r,lat1,lonO)
             [obj.lonc, obj.latc] = eqa2latlon(obj.xc,obj.yc,fe,fn,r,lat1,lonO);
             [obj.lon, obj.lat] = eqa2latlon(obj.x,obj.y,fe,fn,r,lat1,lonO);
         end

@@ -546,7 +546,8 @@ function ellipsePreviewPB_Callback(hObject, eventdata, handles)
             data.ellipse{1} = ellipseObj(xa, ya, az, angRes, xc, yc);
 
             % Make the ellipses lat,lon coordinates
-            data.ellipse{1} = data.ellipse{1}.getLatLonFromEqaXY(data.re, data.proj.lat1, data.proj.lonO);
+            fe = 0; fn = 0;
+            data.ellipse{1} = data.ellipse{1}.getLatLonFromEqaXY(fe, fn, data.re, data.proj.lat1, data.proj.lonO);
 
             % If we're plotting the ellipse only, i.e. if layers havn't been drawn here, 
             % then clear the axes, because a previous plot might persist. Can
